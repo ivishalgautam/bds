@@ -1,0 +1,31 @@
+import config from "../config/index.js";
+import { Sequelize } from "sequelize";
+import migration from "./index.js";
+
+const postgresConnection = async (fastify, options) => {
+    let dbSuccess = null;
+
+    const sequelize = new Sequelize(
+        config.pg_database_name,
+        config.pg_username,
+        config.pg_password,
+        {
+            host: config.pg_host,
+            dialect: config.pg_dialect,
+            logging: false,
+        }
+    );
+    try {
+        await sequelize.authenticate();
+        dbSuccess = true;
+        fastify.log.info(`Postgres Database connection OK!`);
+        fastify.log.info(`Initializing sequelize connection and models...`);
+        await migration.init(sequelize);
+        fastify.log.info(`Migration sucessfully completed...`);
+    } catch (error) {
+        dbSuccess == false;
+        process.exit(1);
+    }
+};
+
+export default postgresConnection;
