@@ -68,7 +68,7 @@ export default function MileStones() {
     }
   };
   return (
-    <div className="relative flex items-center gap-4">
+    <div className="relative flex items-center gap-4 w-full">
       <div className="border-2 border-dashed border-primary absolute mx-auto w-[95%] ml-6" />
       <button onClick={() => handleSlide("prev")}>
         <BsChevronCompactLeft className="text-4xl" />
@@ -79,10 +79,10 @@ export default function MileStones() {
         spaceBetween={30}
         className="mySwiper"
       >
-        {slides.map((slide) => (
-          <SwiperSlide key={slide.title}>
+        {slides.map((slide, key) => (
+          <SwiperSlide key={key}>
             <div className="bg-white w-full rounded-3xl">
-              <Image src={slide.image} alt="" className="w-full aspect-video" />
+              <Image src={slide.image} alt="img" className="aspect-video" />
               <div className="p-4">
                 <h3>{slide.title}</h3>
                 <p>{slide.description}</p>

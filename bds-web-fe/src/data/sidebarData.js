@@ -93,6 +93,12 @@ export const AllRoutes = [
     ],
   },
   {
+    label: "Classes",
+    link: "/classes",
+    icon: MdBook,
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
+  },
+  {
     label: "Courses",
     link: "/courses/create",
     icon: MdBook,

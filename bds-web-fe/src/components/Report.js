@@ -19,8 +19,7 @@ export default function Report({ last_30_days_data }) {
       image: Courses,
     },
     {
-      title:
-        (last_30_days_data?.total_sub_franchisee || 0),
+      title: last_30_days_data?.total_sub_franchisee || 0,
       description: "Franchisee Added",
       image: Franchisee,
     },

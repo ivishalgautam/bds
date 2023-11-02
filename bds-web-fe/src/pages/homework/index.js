@@ -42,6 +42,8 @@ export default function Homework() {
     queryFn: fetchHomeworks,
   });
 
+  console.log(data);
+
   const queryClient = useQueryClient();
 
   const createMutation = useMutation(createItem, {
@@ -130,6 +132,7 @@ export default function Homework() {
             openModal={openModal}
             setType={setType}
             setProductId={setProductId}
+            isDisabled={homework.is_disabled}
           />
         ))}
       </div>

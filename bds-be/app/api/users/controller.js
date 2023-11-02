@@ -174,6 +174,7 @@ const getUser = async (req, res) => {
 };
 
 const getStudents = async (req, res) => {
+  console.log(req.user_data.id);
   try {
     if (req.user_data.role === "sub_franchisee") {
       const franchisee = await table.FranchiseeModel.getByUserId(req);

@@ -13,7 +13,10 @@ export default function MFCourse({
   return (
     <div className="bg-white rounded-xl overflow-hidden">
       {thumbnail ? (
-        <img src={thumbnail} className="w-full object-cover aspect-[4/3]" />
+        <img
+          src={`http://localhost:3001/${thumbnail}`}
+          className="w-full object-cover aspect-[4/3]"
+        />
       ) : (
         <Image src={CourseImg} />
       )}

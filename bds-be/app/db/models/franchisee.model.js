@@ -7,88 +7,87 @@ import moment from "moment";
 let FranchiseeModel = null;
 
 const init = async (sequelize) => {
-    FranchiseeModel = sequelize.define(constants.models.FRANCHISEE_TABLE, {
-        id: {
-            allowNull: false,
-            primaryKey: true,
-            unique: true,
-            type: sequelizeFwk.DataTypes.UUID,
-            defaultValue: sequelizeFwk.DataTypes.UUIDV4,
-        },
-        franchisee_name: {
-            type: sequelizeFwk.DataTypes.STRING,
-            allowNull: false,
-        },
-        document_url: {
-            type: sequelizeFwk.DataTypes.JSONB,
-            defaultValue: [],
-        },
-        gst_number: {
-            type: sequelizeFwk.DataTypes.STRING,
-            allowNull: false,
-        },
-        user_id: {
-            type: sequelizeFwk.DataTypes.UUID,
-            onDelete: "CASCADE",
-            references: {
-                model: constants.models.USER_TABLE,
-                key: "id",
-                allowNull: false,
-                deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-            },
-        },
-
-        franchisee_id: {
-            type: sequelizeFwk.DataTypes.UUID,
-            onDelete: "CASCADE",
-            references: {
-                model: constants.models.FRANCHISEE_TABLE,
-                key: "id",
-                allowNull: true,
-                deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-            },
-        },
-    });
-    await FranchiseeModel.sync({ alter: true });
+  FranchiseeModel = sequelize.define(constants.models.FRANCHISEE_TABLE, {
+    id: {
+      allowNull: false,
+      primaryKey: true,
+      unique: true,
+      type: sequelizeFwk.DataTypes.UUID,
+      defaultValue: sequelizeFwk.DataTypes.UUIDV4,
+    },
+    franchisee_name: {
+      type: sequelizeFwk.DataTypes.STRING,
+      allowNull: false,
+    },
+    document_url: {
+      type: sequelizeFwk.DataTypes.JSONB,
+      defaultValue: [],
+    },
+    gst_number: {
+      type: sequelizeFwk.DataTypes.STRING,
+      allowNull: false,
+    },
+    user_id: {
+      type: sequelizeFwk.DataTypes.UUID,
+      onDelete: "CASCADE",
+      references: {
+        model: constants.models.USER_TABLE,
+        key: "id",
+        allowNull: false,
+        deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
+      },
+    },
+    franchisee_id: {
+      type: sequelizeFwk.DataTypes.UUID,
+      onDelete: "CASCADE",
+      references: {
+        model: constants.models.FRANCHISEE_TABLE,
+        key: "id",
+        allowNull: true,
+        deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
+      },
+    },
+  });
+  await FranchiseeModel.sync({ alter: true });
 };
 
 const create = async (req, franchisee_id) => {
-    return await FranchiseeModel.create({
-        franchisee_name: req.body.franchisee_name,
-        document_url: req.body?.document_url,
-        gst_number: req.body.gst_number,
-        user_id: req.body.user_id,
-        franchisee_id: req.body?.franchisee_id || franchisee_id,
-    });
+  return await FranchiseeModel.create({
+    franchisee_name: req.body.franchisee_name,
+    document_url: req.body?.document_url,
+    gst_number: req.body.gst_number,
+    user_id: req.body.user_id,
+    franchisee_id: req.body?.franchisee_id || franchisee_id,
+  });
 };
 
 const update = async (req) => {
-    return await FranchiseeModel.update(
-        {
-            franchisee_name: req.body?.franchisee_name,
-            document_url: req.body?.document_url,
-            gst_number: req.body?.gst_number,
-            user_id: req.body?.user_id,
-            franchisee_id: req.body?.franchisee_id,
-        },
-        {
-            where: {
-                id: req.params.id,
-            },
-            returning: [
-                "id",
-                "franchisee_name",
-                "document_url",
-                "gst_number",
-                "franchisee_id",
-                "user_id",
-            ],
-            plain: true,
-        }
-    );
+  return await FranchiseeModel.update(
+    {
+      franchisee_name: req.body?.franchisee_name,
+      document_url: req.body?.document_url,
+      gst_number: req.body?.gst_number,
+      user_id: req.body?.user_id,
+      franchisee_id: req.body?.franchisee_id,
+    },
+    {
+      where: {
+        id: req.params.id,
+      },
+      returning: [
+        "id",
+        "franchisee_name",
+        "document_url",
+        "gst_number",
+        "franchisee_id",
+        "user_id",
+      ],
+      plain: true,
+    }
+  );
 };
 const get = async () => {
-    let query = `
+  let query = `
         SELECT 
             frs.id,
             frs.franchisee_name,
@@ -101,55 +100,56 @@ const get = async () => {
         WHERE 
             frs.franchisee_id is null
     `;
-    return await FranchiseeModel.sequelize.query(query, {
-        type: sequelizeFwk.QueryTypes.SELECT,
-    });
+  return await FranchiseeModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
 };
 
 const getById = async (req, fran_id) => {
-    return await FranchiseeModel.findOne({
-        where: {
-            id: req?.params?.id || fran_id,
-        },
-    });
+  console.log(req.params, fran_id);
+  return await FranchiseeModel.findOne({
+    where: {
+      id: req?.params?.id || fran_id,
+    },
+  });
 };
 
 const deleteById = async (req) => {
-    return await FranchiseeModel.destroy({
-        where: {
-            id: req.params.id,
-        },
-    });
+  return await FranchiseeModel.destroy({
+    where: {
+      id: req.params.id,
+    },
+  });
 };
 
 const getSubFranchisee = async (req) => {
-    return await FranchiseeModel.findOne({
-        where: {
-            id: req.body?.sub_franchisee_id,
-            franchisee_id: {
-                [Op.ne]: null,
-            },
-        },
-    });
+  return await FranchiseeModel.findOne({
+    where: {
+      id: req.body?.sub_franchisee_id,
+      franchisee_id: {
+        [Op.ne]: null,
+      },
+    },
+  });
 };
 
 const getAllSubFranchisee = async (req) => {
-    let whereQuery;
-    if (req.user_data.role === "admin") {
-        whereQuery = "franchisee_id is not null";
-    } else {
-        const record = await FranchiseeModel.findOne({
-            where: {
-                user_id: req.user_data.id,
-                franchisee_id: {
-                    [Op.eq]: null,
-                },
-            },
-        });
-        whereQuery = `franchisee_id = '${record.id}'`;
-    }
+  let whereQuery;
+  if (req.user_data.role === "admin") {
+    whereQuery = "franchisee_id is not null";
+  } else {
+    const record = await FranchiseeModel.findOne({
+      where: {
+        user_id: req.user_data.id,
+        franchisee_id: {
+          [Op.eq]: null,
+        },
+      },
+    });
+    whereQuery = `franchisee_id = '${record.id}'`;
+  }
 
-    let query = `
+  let query = `
         SELECT 
             sbfrs.id,
             sbfrs.franchisee_name,
@@ -163,35 +163,35 @@ const getAllSubFranchisee = async (req) => {
             ${whereQuery}
     
     `;
-    return await FranchiseeModel.sequelize.query(query, {
-        type: sequelizeFwk.QueryTypes.SELECT,
-    });
+  return await FranchiseeModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
 };
 
 const getByUserId = async (req, user_id) => {
-    return await FranchiseeModel.findOne({
-        where: {
-            user_id: req?.user_data?.id || user_id,
-        },
-    });
+  return await FranchiseeModel.findOne({
+    where: {
+      user_id: req?.user_data?.id || user_id,
+    },
+  });
 };
 
 const getFranchiseeUserId = async (req) => {
-    let query;
-    if (req.user_data.role === "admin") {
-        const result = await FranchiseeModel.findAll({
-            where: {
-                franchisee_id: {
-                    [Op.eq]: null,
-                },
-            },
-            attributes: ["user_id"],
-            raw: true,
-        });
-        return result.map((row) => row.user_id);
-    }
-    if (req.user_data.role === "master_franchisee") {
-        query = `
+  let query;
+  if (req.user_data.role === "admin") {
+    const result = await FranchiseeModel.findAll({
+      where: {
+        franchisee_id: {
+          [Op.eq]: null,
+        },
+      },
+      attributes: ["user_id"],
+      raw: true,
+    });
+    return result.map((row) => row.user_id);
+  }
+  if (req.user_data.role === "master_franchisee") {
+    query = `
         SELECT
             (
                 SELECT (json_agg(sbfrn.user_id))
@@ -201,50 +201,50 @@ const getFranchiseeUserId = async (req) => {
             ) as user_ids
         FROM franchisees frn
         WHERE frn.user_id = '${req.user_data.id}'`;
-        const result = await FranchiseeModel.sequelize.query(query, {
-            type: sequelizeFwk.QueryTypes.SELECT,
-        });
+    const result = await FranchiseeModel.sequelize.query(query, {
+      type: sequelizeFwk.QueryTypes.SELECT,
+    });
 
-        return [...new Set(result.flatMap((obj) => [...obj.user_ids]))];
-    }
+    return [...new Set(result.flatMap((obj) => [...obj.user_ids]))];
+  }
 };
 
 const countSubFranchisee = async (id, sub_id, last_30_days = false) => {
-    let where_query = {};
-    if (last_30_days) {
-        where_query = {
-            createdAt: {
-                [Op.gte]: moment()
-                    .subtract(30, "days")
-                    .format("YYYY-MM-DD HH:mm:ss.SSSZ"),
-            },
-        };
-    }
-    if (id) {
-        where_query.franchisee_id = id;
-    }
+  let where_query = {};
+  if (last_30_days) {
+    where_query = {
+      createdAt: {
+        [Op.gte]: moment()
+          .subtract(30, "days")
+          .format("YYYY-MM-DD HH:mm:ss.SSSZ"),
+      },
+    };
+  }
+  if (id) {
+    where_query.franchisee_id = id;
+  }
 
-    if (sub_id) {
-        where_query.id = sub_id;
-        where_query.franchisee_id = {
-            [Op.ne]: null,
-        };
-    }
-    return await FranchiseeModel.count({
-        where: where_query,
-    });
+  if (sub_id) {
+    where_query.id = sub_id;
+    where_query.franchisee_id = {
+      [Op.ne]: null,
+    };
+  }
+  return await FranchiseeModel.count({
+    where: where_query,
+  });
 };
 
 export default {
-    init,
-    create,
-    update,
-    get,
-    getById,
-    deleteById,
-    getByUserId,
-    getSubFranchisee,
-    getAllSubFranchisee,
-    countSubFranchisee,
-    getFranchiseeUserId,
+  init,
+  create,
+  update,
+  get,
+  getById,
+  deleteById,
+  getByUserId,
+  getSubFranchisee,
+  getAllSubFranchisee,
+  countSubFranchisee,
+  getFranchiseeUserId,
 };

@@ -59,6 +59,7 @@ const update = async (req) => {
         }
     );
 };
+
 const get = async () => {
     let query = `
         SELECT 

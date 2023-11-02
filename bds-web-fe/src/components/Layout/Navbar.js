@@ -59,15 +59,22 @@ function Navbar() {
         </div>
         <div className="relative inline-block">
           {user && (
-            <div onClick={toggleDropdown} className="flex gap-4 items-center cursor-pointer">
+            <div
+              onClick={toggleDropdown}
+              className="flex gap-4 items-center cursor-pointer"
+            >
               {user.image_url ? (
                 <img
-                  src={user.image_url}
-                  alt=""
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${user.image_url}`}
+                  alt="profile"
                   className="w-12 h-12 rounded-full"
                 />
               ) : (
-                <Image src={Avatar} alt="" className="w-12 h-12 rounded-full" />
+                <Image
+                  src={Avatar}
+                  alt="avatar"
+                  className="w-12 h-12 rounded-full"
+                />
               )}
               <div>
                 {userProfile(

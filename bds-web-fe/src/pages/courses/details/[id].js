@@ -16,12 +16,33 @@ function CourseDetails() {
   const fetchCourse = () => {
     return http().get(`${endpoints.courses.getAll}/${id}`);
   };
-
   const { isLoading, isError, data } = useQuery({
     queryKey: ["course"],
     queryFn: fetchCourse,
     enabled: !!id,
   });
+
+  const fetchHomeworks = () => {
+    return http().get(`${endpoints.homeworks.getAll}`);
+  };
+
+  const { data: homeworks } = useQuery({
+    queryKey: ["homework"],
+    queryFn: fetchHomeworks,
+  });
+  const filteredHomeWorks = homeworks?.filter(
+    (homework) => homework.course_id === id
+  );
+
+  const fetchQuizs = () => {
+    return http().get(`${endpoints.quiz.getAll}`);
+  };
+
+  const { data: quizs } = useQuery({
+    queryKey: ["quizs"],
+    queryFn: fetchQuizs,
+  });
+  const filteredQuizs = quizs?.filter((quiz) => quiz.course_id === id);
 
   if (isLoading)
     return (
@@ -29,6 +50,7 @@ function CourseDetails() {
         <Spinner />
       </div>
     );
+
   if (isError) return <h2>Error</h2>;
 
   const learnings = [
@@ -43,7 +65,6 @@ function CourseDetails() {
     "A PC or Mac is required",
     "No software is required in advance of the course (all software used in the course is free or has a demo version)",
   ];
-
   const summaryPoints = [
     "5 hours on demand video",
     "15 articles",
@@ -55,9 +76,9 @@ function CourseDetails() {
   return (
     <div className="font-mulish">
       <div className="flex justify-between items-start gap-6">
-        <div className="w-3/5 p-4 bg-white rounded-md space-y-6">
+        <div className="aspect-square p-4 bg-white rounded-md space-y-6">
           <img
-            src={data.course_thumbnail}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${data.course_thumbnail}`}
             className="bg-gray-100 w-full h-60 rounded-md"
           />
           <h1 className="text-2xl font-bold">{data.course_name}</h1>
@@ -120,7 +141,15 @@ function CourseDetails() {
           <p>{data.course_description}</p>
         </div>
         <h1 className="text-2xl font-bold">Course Content</h1>
-        <CourseAccordion data={data.course_syllabus} />
+        <CourseAccordion
+          data={data.course_syllabus}
+          homeworks={filteredHomeWorks}
+          quizs={filteredQuizs?.map((quiz) => ({
+            id: quiz.id,
+            weeks: quiz.weeks,
+            is_disabled: quiz.is_disabled,
+          }))}
+        />
       </div>
     </div>
   );

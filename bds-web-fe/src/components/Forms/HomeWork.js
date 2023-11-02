@@ -187,7 +187,9 @@ const HomeworkForm = ({ type, handleCreate, productId, handleUpdate }) => {
                       onChange={handleCourseChange}
                       placeholder="Course Name"
                       isDisabled={type === "view"}
-                      styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                      styles={{
+                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                      }}
                       menuPortalTarget={document.body}
                       menuPosition="absolute"
                       className="w-full border outline-none rounded-md font-mulish text-xl font-semibold"
@@ -378,9 +380,7 @@ const HomeworkForm = ({ type, handleCreate, productId, handleUpdate }) => {
                         )} */}
                           <div className="p-4 text-center">
                             <span className="text-gray-500">
-                              {type !== "view"
-                                ? "Upload PPT File Here"
-                                : ""}
+                              {type !== "view" ? "Upload PPT File Here" : ""}
                             </span>
                           </div>
                         </div>

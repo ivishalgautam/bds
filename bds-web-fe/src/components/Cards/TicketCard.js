@@ -58,7 +58,7 @@ function TicketCard({
         <div className="flex items-center gap-4">
           {imageUrl ? (
             <img
-              src={imageUrl}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${imageUrl}`}
               alt="user_image"
               className="w-12 h-12 rounded-full"
             />

@@ -7,64 +7,64 @@ import moment from "moment";
 let StudentModel = null;
 
 const init = async (sequelize) => {
-    StudentModel = sequelize.define(
-        constants.models.STUDENT_TABLE,
-        {
-            id: {
-                allowNull: false,
-                primaryKey: true,
-                type: sequelizeFwk.DataTypes.UUID,
-                defaultValue: sequelizeFwk.DataTypes.UUIDV4,
-            },
-            user_id: {
-                type: sequelizeFwk.DataTypes.UUID,
-                onDelete: "CASCADE",
-                references: {
-                    model: constants.models.USER_TABLE,
-                    key: "id",
-                    allowNull: false,
-                    deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-                },
-            },
-            franchisee_id: {
-                type: sequelizeFwk.DataTypes.UUID,
-                onDelete: "CASCADE",
-                references: {
-                    model: constants.models.FRANCHISEE_TABLE,
-                    key: "id",
-                    allowNull: false,
-                    deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-                },
-            },
-            sub_franchisee_id: {
-                type: sequelizeFwk.DataTypes.UUID,
-                onDelete: "CASCADE",
-                references: {
-                    model: constants.models.FRANCHISEE_TABLE,
-                    key: "id",
-                    allowNull: false,
-                    deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-                },
-            },
+  StudentModel = sequelize.define(
+    constants.models.STUDENT_TABLE,
+    {
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        type: sequelizeFwk.DataTypes.UUID,
+        defaultValue: sequelizeFwk.DataTypes.UUIDV4,
+      },
+      user_id: {
+        type: sequelizeFwk.DataTypes.UUID,
+        onDelete: "CASCADE",
+        references: {
+          model: constants.models.USER_TABLE,
+          key: "id",
+          allowNull: false,
+          deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
         },
-        {
-            createdAt: "created_at",
-            updatedAt: "updated_at",
-        }
-    );
-    await StudentModel.sync({ alter: true });
+      },
+      franchisee_id: {
+        type: sequelizeFwk.DataTypes.UUID,
+        onDelete: "CASCADE",
+        references: {
+          model: constants.models.FRANCHISEE_TABLE,
+          key: "id",
+          allowNull: false,
+          deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
+        },
+      },
+      sub_franchisee_id: {
+        type: sequelizeFwk.DataTypes.UUID,
+        onDelete: "CASCADE",
+        references: {
+          model: constants.models.FRANCHISEE_TABLE,
+          key: "id",
+          allowNull: false,
+          deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
+        },
+      },
+    },
+    {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    }
+  );
+  await StudentModel.sync({ alter: true });
 };
 
 const create = async (user_id, franchisee_id, sub_franchisee_id) => {
-    return await StudentModel.create({
-        user_id: user_id,
-        franchisee_id: franchisee_id,
-        sub_franchisee_id: sub_franchisee_id,
-    });
+  return await StudentModel.create({
+    user_id: user_id,
+    franchisee_id: franchisee_id,
+    sub_franchisee_id: sub_franchisee_id,
+  });
 };
 
 const get = async (sub_franchisee_id) => {
-    let query = `
+  let query = `
         SELECT
             st.id,
             st.user_id,
@@ -83,72 +83,71 @@ const get = async (sub_franchisee_id) => {
         LEFT JOIN users_courses uscr ON uscr.user_id = st.user_id
         LEFT JOIN courses crs ON crs.id = uscr.course_id
         WHERE
-            sub_franchisee_id = '${sub_franchisee_id}'
+            sub_franchisee_id = '${sub_franchisee_id}';
     `;
-    return await StudentModel.sequelize.query(query, {
-        type: sequelizeFwk.QueryTypes.SELECT,
-    });
+  return await StudentModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
 };
 
 const getById = async (id) => {
-    return await StudentModel.findOne({
-        where: {
-            id: id,
-        },
-    });
+  return await StudentModel.findOne({
+    where: {
+      id: id,
+    },
+  });
 };
 
 const countStudent = async (id, sub_id, last_30_days = false) => {
-    let where_query = {};
-    if (last_30_days) {
-        where_query = {
-            created_at: {
-                [Op.gte]: moment()
-                    .subtract(30, "days")
-                    .format("YYYY-MM-DD HH:mm:ss.SSSZ"),
-            },
-        };
-    }
+  let where_query = {};
+  if (last_30_days) {
+    where_query = {
+      created_at: {
+        [Op.gte]: moment()
+          .subtract(30, "days")
+          .format("YYYY-MM-DD HH:mm:ss.SSSZ"),
+      },
+    };
+  }
 
-    if (id) {
-        where_query.franchisee_id = id;
-    }
+  if (id) {
+    where_query.franchisee_id = id;
+  }
 
-    if (sub_id) {
-        where_query.sub_franchisee_id = sub_id;
-    }
+  if (sub_id) {
+    where_query.sub_franchisee_id = sub_id;
+  }
 
-    return await StudentModel.count({
-        where: where_query,
-    });
+  return await StudentModel.count({
+    where: where_query,
+  });
 };
 
 const getByUserId = async (user_id) => {
-    return await StudentModel.findOne({
-        where: {
-            user_id: user_id,
-        },
-    });
+  return await StudentModel.findOne({
+    where: {
+      user_id: user_id,
+    },
+  });
 };
 
 const getUserIdsBySubFranchisee = async (franchisee_id) => {
-    const result = await StudentModel.findAll({
-        where: {
-            sub_franchisee_id: franchisee_id,
-        },
-        attributes: ["user_id"],
-        raw: true,
-    });
-    return result.map((row) => row.user_id);
+  const result = await StudentModel.findAll({
+    where: {
+      sub_franchisee_id: franchisee_id,
+    },
+    attributes: ["user_id"],
+    raw: true,
+  });
+  return result.map((row) => row.user_id);
 };
 
-
 export default {
-    init,
-    create,
-    get,
-    getById,
-    countStudent,
-    getByUserId,
-    getUserIdsBySubFranchisee,
+  init,
+  create,
+  get,
+  getById,
+  countStudent,
+  getByUserId,
+  getUserIdsBySubFranchisee,
 };

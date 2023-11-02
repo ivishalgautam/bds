@@ -42,6 +42,7 @@ export default function Home() {
   const openModal = () => {
     setIsModalOpen(true);
   };
+
   const openCreateModal = () => {
     setIsCresteModalOpen(true);
   };
@@ -50,6 +51,7 @@ export default function Home() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
   const closeCreateModal = () => {
     setIsCresteModalOpen(false);
   };
@@ -102,6 +104,8 @@ export default function Home() {
     },
   ];
 
+  console.log({ reports });
+
   return (
     <div className="space-y-6">
       {user?.role === "student" && <MileStones />}
@@ -113,7 +117,7 @@ export default function Home() {
         </>
       )}
       <AnnouncementSection data={data.announcements} />
-      {user?.role !== "student" && data.tickets.length > 0 && (
+      {user?.role !== "student" && data.tickets?.length > 0 && (
         <>
           <Title text="Support Tickets to Answer" />
           <div className="">

@@ -121,6 +121,7 @@ const getById = async (req, user_id) => {
     },
   });
 };
+
 const getByUsername = async (req, record = undefined) => {
   return await UserModel.findOne({
     where: {

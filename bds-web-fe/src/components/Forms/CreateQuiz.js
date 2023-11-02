@@ -11,7 +11,8 @@ import { useRouter } from "next/router";
 import { useFetchCoursesNames } from "@/hooks/useFetchCoursesName";
 import { FaTrashAlt } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { useRef } from 'react';
+import { useRef } from "react";
+import { isObject } from "@/utils/object";
 
 function CreateQuiz({ type }) {
   const router = useRouter();
@@ -135,7 +136,10 @@ function CreateQuiz({ type }) {
       queryClient.invalidateQueries({ queryKey: ["quiz"] });
       toast.success("Quiz created successfully.");
     },
-    onError: () => {
+    onError: (e) => {
+      if (isObject) {
+        return toast.error(e.message);
+      }
       toast.error("Failed to create Quiz");
     },
   });

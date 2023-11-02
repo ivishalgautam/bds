@@ -35,8 +35,10 @@ export default function SignUpForm() {
     try {
       const response = await http().post(`${endpoints.auth.signup}`, userData);
       router.push("/login");
+      console.log(response);
       return response.data;
     } catch (error) {
+      console.log(error);
       toast.error(error.message);
     }
   };

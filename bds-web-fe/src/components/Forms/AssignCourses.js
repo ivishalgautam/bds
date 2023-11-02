@@ -10,11 +10,11 @@ import { data } from "autoprefixer";
 
 const AssignCourseForm = ({
   handleCreate,
+  handleUpdate,
   closeModal,
   coursesAssignId,
   courses,
   type,
-  handleUpdate,
 }) => {
   const {
     register,

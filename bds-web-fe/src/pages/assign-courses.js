@@ -42,7 +42,7 @@ export default function Products() {
     queryKey: ["assign-courses"],
     queryFn: fetchAssignCourses,
   });
-
+  // console.log({ data });
   const toggleDropdown = (id) => {
     setShow((prevState) => ({
       [id]: !prevState[id],
@@ -80,7 +80,7 @@ export default function Products() {
       queryClient.invalidateQueries({ queryKey: ["assign-courses"] });
       toast.success("Course assigned successfully.");
     },
-    onError: () => {
+    onError: (e) => {
       toast.error("Failed to assign course");
     },
   });
@@ -96,7 +96,8 @@ export default function Products() {
         queryClient.invalidateQueries({ queryKey: ["assign-courses"] });
         toast.success("Course assign updated successfully.");
       },
-      onError: () => {
+      onError: (e) => {
+        console.log({ update: e });
         toast.error("Failed to update course assign.");
       },
     }
@@ -118,7 +119,7 @@ export default function Products() {
   return (
     <div className="space-y-6">
       <Title text="Assign Course" />
-      <div className="flex flex-col items-center  space-y-2">
+      <div className="flex flex-col items-center space-y-2">
         <div
           className="flex flex-col items-center justify-center"
           onClick={() => {
@@ -227,11 +228,11 @@ export default function Products() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <AssignCourseForm
           handleCreate={handleCreate}
+          handleUpdate={handleUpdate}
           closeModal={closeModal}
           courses={courses}
           coursesAssignId={coursesAssignId}
           type={type}
-          handleUpdate={handleUpdate}
         />
       </Modal>
     </div>

@@ -20,6 +20,7 @@ export default function Course({
   id,
   user,
 }) {
+  console.log(thumbnail);
   const [show, setShow] = useState(false);
   const router = useRouter();
 
@@ -46,7 +47,7 @@ export default function Course({
   return (
     <div className="bg-white rounded-xl" onMouseLeave={() => setShow(false)}>
       <img
-        src={thumbnail}
+        src={`http://localhost:3001/${thumbnail}`}
         alt=""
         className="h-48 w-full object-cover rounded-t-xl"
       />

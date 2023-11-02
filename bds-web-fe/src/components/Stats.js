@@ -22,7 +22,7 @@ export default function Stats({ data }) {
       {finalData?.map((item, i) => (
         <div className="bg-white p-4 rounded-lg font-mulish" key={i}>
           <div className="flex gap-4 items-center">
-            <div className={`${item.bg} p-3 rounded-full `}>
+            <div className={`${item.bg} p-3 rounded-full`}>
               <Image src={Office} alt="" className="w-6 h-6" />
             </div>
             <div>
