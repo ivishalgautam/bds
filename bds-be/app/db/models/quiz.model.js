@@ -78,6 +78,19 @@ const get = async () => {
   });
 };
 
+const getByCourseId = async (course_id) => {
+  const query = `
+        SELECT
+            *
+        FROM
+            quizs
+        WHERE course_id = '${course_id}'
+    `;
+  return await QuizModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
+};
+
 const getByWeekAndCourseId = async (week, course_id) => {
   const query = `
         SELECT
@@ -115,7 +128,7 @@ const getById = async (req, course_id) => {
   });
 };
 
-const update = async (req) => {
+const update = async (req, course_id) => {
   return await QuizModel.update(
     {
       quiz_name: req.body?.quiz_name,
@@ -126,7 +139,22 @@ const update = async (req) => {
     },
     {
       where: {
-        id: req.params.id,
+        id: req.params.id || course_id,
+      },
+      returning: true,
+      plain: true,
+    }
+  );
+};
+
+const enableQuiz = async (status, course_id) => {
+  return await QuizModel.update(
+    {
+      is_disabled: status,
+    },
+    {
+      where: {
+        id: course_id,
       },
       returning: true,
       plain: true,
@@ -150,4 +178,5 @@ export default {
   update,
   deleteById,
   getByWeekAndCourseId,
+  getByCourseId,
 };

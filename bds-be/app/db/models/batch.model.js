@@ -73,6 +73,18 @@ const init = async (sequelize) => {
         type: sequelizeFwk.DataTypes.JSONB,
         allowNull: false,
       },
+      quiz: {
+        type: sequelizeFwk.DataTypes.JSONB,
+        default: [],
+      },
+      start_time: {
+        type: sequelizeFwk.DataTypes.STRING,
+        allowNull: false,
+      },
+      end_time: {
+        type: sequelizeFwk.DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {
       createdAt: "created_at",
@@ -87,7 +99,8 @@ const create = async (
   franchisee_id,
   sub_franchisee_id,
   course_name,
-  course_syllabus
+  course_syllabus,
+  quiz
 ) => {
   return await BatchModel.create({
     batch_name: req.body.batch_name,
@@ -98,17 +111,25 @@ const create = async (
     course_id: req.body.course_id,
     sub_franchisee_id: sub_franchisee_id,
     franchisee_id: franchisee_id,
+    quiz: quiz,
+    start_time: req.body.start_time,
+    end_time: req.body.end_time,
   });
 };
 
-const get = async (teacher_id, sub_franchisee_id) => {
-  let wherQuery;
+const get = async (teacher_id, sub_franchisee_id, student_id) => {
+  let wherQuery = "";
 
   if (teacher_id) {
-    wherQuery = `bt.teacher_id = '${teacher_id}'`;
+    wherQuery = `WHERE bt.teacher_id = '${teacher_id}'`;
   }
+
   if (sub_franchisee_id) {
-    wherQuery = `bt.sub_franchisee_id = '${sub_franchisee_id}'`;
+    wherQuery = `WHERE bt.sub_franchisee_id = '${sub_franchisee_id}'`;
+  }
+
+  if (student_id) {
+    wherQuery = `WHERE bt.students_id @> '["${student_id}"]'::jsonb`;
   }
 
   let query = `
@@ -124,13 +145,13 @@ const get = async (teacher_id, sub_franchisee_id) => {
             bt.course_id,
             bt.franchisee_id,
             bt.sub_franchisee_id,
-            bt.course_syllabus
+            bt.course_syllabus,
+            bt.quiz
         FROM
             batches bt
         INNER JOIN teachers tc ON tc.id = bt.teacher_id
         INNER JOIN users usr ON usr.id = tc.user_id
-        WHERE
-            ${wherQuery}
+        ${wherQuery}
     `;
   return await BatchModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,
@@ -146,6 +167,7 @@ const getById = async (req, batch_id) => {
 };
 
 const update = async (req, course_name) => {
+  // console.log("req.body");
   return await BatchModel.update(
     {
       batch_name: req.body?.batch_name,
