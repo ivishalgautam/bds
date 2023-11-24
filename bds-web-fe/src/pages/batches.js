@@ -39,6 +39,8 @@ function Batches() {
     queryFn: fetchBatches,
   });
 
+  // console.log({ data });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: students } = useFetchStudents();

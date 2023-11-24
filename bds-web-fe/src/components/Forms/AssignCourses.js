@@ -37,7 +37,7 @@ const AssignCourseForm = ({
 
   const { data: users } = useFetchUsers();
 
-  const formatedUsers = users?.map(({ id: value, username: label }) => ({
+  const formattedUsers = users?.map(({ id: value, username: label }) => ({
     value,
     label,
   }));
@@ -63,16 +63,16 @@ const AssignCourseForm = ({
           "status",
           options.find((so) => so.value === response.status)
         );
-      formatedUsers &&
+      formattedUsers &&
         setValue(
           "user_id",
-          formatedUsers.find((so) => so.value === response.user_id)
+          formattedUsers.find((so) => so.value === response.user_id)
         );
     };
     if (coursesAssignId && (type === "edit" || type === "view")) {
       fetchInfo();
     }
-  }, [coursesAssignId, formatedUsers, courses, options]);
+  }, [coursesAssignId, formattedUsers, courses, options]);
   return (
     <div className="space-y-4">
       <Title
@@ -143,7 +143,7 @@ const AssignCourseForm = ({
               render={({ field }) => (
                 <Select
                   {...field}
-                  options={formatedUsers}
+                  options={formattedUsers}
                   placeholder="Select Users"
                   isDisabled={type === "view"}
                   className="w-full h-[42px] outline-none rounded-md bg-[#F7F7FC] font-mulish text-xl font-semibold"

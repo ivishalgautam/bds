@@ -4,9 +4,6 @@ import http from "@/utils/http";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
-import Check from "../../../assets/check.svg";
-import Dot from "../../../assets/dot.svg";
-import Image from "next/image";
 import CourseAccordion from "@/components/CourseAccordion";
 
 function CourseDetails() {
@@ -33,16 +30,6 @@ function CourseDetails() {
   const filteredHomeWorks = homeworks?.filter(
     (homework) => homework.course_id === id
   );
-
-  const fetchQuizs = () => {
-    return http().get(`${endpoints.quiz.getAll}`);
-  };
-
-  const { data: quizs } = useQuery({
-    queryKey: ["quizs"],
-    queryFn: fetchQuizs,
-  });
-  const filteredQuizs = quizs?.filter((quiz) => quiz.course_id === id);
 
   if (isLoading)
     return (
@@ -144,11 +131,7 @@ function CourseDetails() {
         <CourseAccordion
           data={data.course_syllabus}
           homeworks={filteredHomeWorks}
-          quizs={filteredQuizs?.map((quiz) => ({
-            id: quiz.id,
-            weeks: quiz.weeks,
-            is_disabled: quiz.is_disabled,
-          }))}
+          type="course"
         />
       </div>
     </div>

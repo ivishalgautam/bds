@@ -82,7 +82,10 @@ const http = (headerType = "json", baseURL = API_ROOT) => {
   }
 
   function post(path, payload) {
-    return client.post(path, payload).then((response) => response.data);
+    return client.post(path, payload).then((response) => {
+      // console.log(response.data);
+      return response.data;
+    });
   }
 
   function put(path, payload) {

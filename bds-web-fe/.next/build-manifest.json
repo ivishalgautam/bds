@@ -22,10 +22,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/classes": [
+    "/batches": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/classes.js"
+      "static/chunks/pages/batches.js"
+    ],
+    "/schedules": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/schedules.js"
     ]
   },
   "ampFirstPages": []

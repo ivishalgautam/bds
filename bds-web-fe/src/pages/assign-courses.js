@@ -96,8 +96,8 @@ export default function Products() {
         queryClient.invalidateQueries({ queryKey: ["assign-courses"] });
         toast.success("Course assign updated successfully.");
       },
-      onError: (e) => {
-        console.log({ update: e });
+      onError: () => {
+        // console.log({ update: e });
         toast.error("Failed to update course assign.");
       },
     }

@@ -92,12 +92,7 @@ export const AllRoutes = [
       ROLES.STUDENT,
     ],
   },
-  {
-    label: "Classes",
-    link: "/classes",
-    icon: MdBook,
-    roles: [ROLES.STUDENT, ROLES.TEACHER],
-  },
+
   {
     label: "Courses",
     link: "/courses/create",
@@ -138,6 +133,18 @@ export const AllRoutes = [
       ROLES.SUB_FRANCHISEE,
       ROLES.TEACHER,
     ],
+  },
+  {
+    label: "Classes",
+    link: "/classes",
+    icon: MdBook,
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
+  },
+  {
+    label: "Schedules",
+    link: "/schedules",
+    icon: MdBook,
+    roles: [ROLES.STUDENT, ROLES.TEACHER, ROLES.SUB_FRANCHISEE],
   },
   {
     label: "Teachers",

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { MainContext } from "@/store/context";
+import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { MdHomeWork, MdOutlineQuiz } from "react-icons/md";
 import { PiFilePptDuotone } from "react-icons/pi";
@@ -9,9 +10,10 @@ const CourseAccordion = ({
   quizs,
   batchId,
   handleWeekComplete,
+  type,
 }) => {
   // console.log(homeworks[0]?.homework[0].day_wise);
-  // console.log({ syllabus: data });
+  const { user } = useContext(MainContext);
   const [openIndex, setOpenIndex] = useState(null);
 
   const handleToggleAccordion = (index) => {
@@ -31,7 +33,7 @@ const CourseAccordion = ({
             onClick={() => handleToggleAccordion(index)}
           >
             <p className="font-bold font-mulish text-lg">Week {item.weeks}</p>
-            {getQuiz(item.weeks)?.length > 0 && (
+            {type === "class" && getQuiz(item.weeks)?.length > 0 && (
               <a
                 href={
                   getQuiz(item.weeks)[0]?.is_disabled
@@ -71,37 +73,49 @@ const CourseAccordion = ({
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold">{day.heading}</h3>
                     <div className="ml-auto mr-10 flex items-center justify-center gap-4">
-                      {homeworks !== undefined ? (
-                        <>
-                          <a
-                            href={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${
-                              homeworks[0]?.homework[index].day_wise.filter(
-                                (homework) => homework.days === day.days
-                              )[0]?.file
-                            }`}
-                            download
-                            className="flex items-center justify-center flex-col"
-                          >
-                            <MdHomeWork size={25} className="text-primary" />
-                            <p className="font-semibold text-xs">Homework</p>
-                          </a>
-                          <a
-                            href={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${
-                              homeworks[0].homework[index].day_wise.filter(
-                                (homework) => homework.days === day.days
-                              )[0]?.ppt_file
-                            }`}
-                            download
-                            className="flex items-center justify-center flex-col"
-                          >
-                            <PiFilePptDuotone
-                              size={25}
-                              className="text-primary"
-                            />
-                            <p className="font-semibold text-xs">PPT</p>
-                          </a>
-                        </>
-                      ) : (
+                      {homeworks !== undefined &&
+                        Array.isArray(homeworks) &&
+                        homeworks.length !== 0 && (
+                          <>
+                            {type === "class" && (
+                              <a
+                                href={`${
+                                  process.env.NEXT_PUBLIC_IMAGE_DOMAIN
+                                }/${
+                                  homeworks[0]?.homework[index].day_wise.filter(
+                                    (homework) => homework.days === day.days
+                                  )[0]?.file
+                                }`}
+                                download
+                                className="flex items-center justify-center flex-col"
+                              >
+                                <MdHomeWork
+                                  size={25}
+                                  className="text-primary"
+                                />
+                                <p className="font-semibold text-xs">
+                                  Homework
+                                </p>
+                              </a>
+                            )}
+                            <a
+                              href={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${
+                                homeworks[0].homework[index].day_wise.filter(
+                                  (homework) => homework.days === day.days
+                                )[0]?.ppt_file
+                              }`}
+                              download
+                              className="flex items-center justify-center flex-col"
+                            >
+                              <PiFilePptDuotone
+                                size={25}
+                                className="text-primary"
+                              />
+                              <p className="font-semibold text-xs">PPT</p>
+                            </a>
+                          </>
+                        )}
+                      {user?.role === "teacher" && (
                         <label className="switch">
                           <input
                             type="checkbox"

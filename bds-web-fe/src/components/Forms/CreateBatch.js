@@ -24,76 +24,80 @@ function CreateBatch({
   const { data: studentsData } = useFetchStudents();
   const { data: teachersData } = useFetchTeachers(user?.role);
 
-   const formatedStudents = studentsData.map(
-     ({ id: value, username: label }) => {
-       return { value, label };
-     }
-   );
+  const formatedStudents = studentsData.map(
+    ({ id: value, username: label }) => {
+      return { value, label };
+    }
+  );
 
-   const {
-     register,
-     control,
-     handleSubmit,
-     setValue,
-     formState: { errors },
-   } = useForm();
-   const onSubmit = (data) => {
-     const studentIds = data.students_ids.map((student) => student.value);
-     let payload = {
-       batch_name: data.batch_name,
-       students_ids: studentIds,
-       course_id: data.course_id.value,
-     };
+  const {
+    register,
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
-     if(user?.role !== "teacher") {
-      payload.teacher_id = data.teacher_id.value
-     }
+  const onSubmit = (data) => {
+    const studentIds = data.students_ids.map((student) => student.value);
+    console.log({ data });
+    let payload = {
+      batch_name: data.batch_name,
+      students_ids: studentIds,
+      course_id: data.course_id.value,
+      start_time: data.start_time,
+      end_time: data.end_time,
+    };
 
-     if (type === "add") {
-       handleCreateBatch(payload);
-     } else {
-       handleUpdateBatch(payload);
-     }
-     closeModal();
-   };
+    if (user?.role !== "teacher") {
+      payload.teacher_id = data.teacher_id.value;
+    }
 
-   useEffect(() => {
-     // Fetch data from API and populate the form with prefilled values
+    if (type === "add") {
+      handleCreateBatch(payload);
+    } else {
+      handleUpdateBatch(payload);
+    }
+    closeModal();
+  };
 
-     const fetchData = async () => {
-       try {
-         const data = await http().get(
-           `${endpoints.batch.getAll}/${selectedBatch}`
-         );
-         const course = { label: data.course_name, value: data.course_id };
+  useEffect(() => {
+    // Fetch data from API and populate the form with prefilled values
 
-         const teachers = teachersData?.find(
-           (item) => item.id === data.teacher_id
-         );
+    const fetchData = async () => {
+      try {
+        const data = await http().get(
+          `${endpoints.batch.getAll}/${selectedBatch}`
+        );
+        const course = { label: data.course_name, value: data.course_id };
 
-         const teacher = {
-           label: teachers?.username,
-           value: teachers?.id,
-         };
+        const teachers = teachersData?.find(
+          (item) => item.id === data.teacher_id
+        );
 
-         const getStudents = (preselectedStudents) => {
-           return formatedStudents.filter((student) =>
-             preselectedStudents.includes(student.value)
-           );
-         };
+        const teacher = {
+          label: teachers?.username,
+          value: teachers?.id,
+        };
 
-         setValue("batch_name", data.batch_name);
-         teacher && setValue("teacher_id", teacher);
-         setValue("course_id", course);
-         setValue("students_ids", getStudents(data.students_id));
-       } catch (error) {
-         console.error(error);
-       }
-     };
-     if (type === "edit" || type === "view") {
-       fetchData();
-     }
-   }, [setValue, type, selectedBatch]);
+        const getStudents = (preselectedStudents) => {
+          return formatedStudents.filter((student) =>
+            preselectedStudents.includes(student.value)
+          );
+        };
+
+        setValue("batch_name", data.batch_name);
+        teacher && setValue("teacher_id", teacher);
+        setValue("course_id", course);
+        setValue("students_ids", getStudents(data.students_id));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (type === "edit" || type === "view") {
+      fetchData();
+    }
+  }, [setValue, type, selectedBatch]);
 
   return (
     <form
@@ -197,6 +201,37 @@ function CreateBatch({
           />
           {errors.students_ids && (
             <p className="text-red-600">{errors.students_ids.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="start_time">Start Time:</label>
+          <input
+            type="time"
+            disabled={type === "view"}
+            className="w-full px-4 py-3 h-[44px] border outline-none rounded-md bg-[#F7F7FC] font-mulish text-xl font-semibold"
+            placeholder="Start time"
+            {...register("start_time", {
+              required: "Start time is required",
+            })}
+          />
+          {errors.batch_name && (
+            <span className="text-red-600">{errors.batch_name.message}</span>
+          )}
+        </div>
+        <div>
+          <label htmlFor="end_time">End time:</label>
+          <input
+            type="time"
+            disabled={type === "view"}
+            className="w-full px-4 py-3 h-[44px] border outline-none rounded-md bg-[#F7F7FC] font-mulish text-xl font-semibold"
+            placeholder="End time"
+            {...register("end_time", {
+              required: "End time is required",
+            })}
+          />
+          {errors.batch_name && (
+            <span className="text-red-600">{errors.batch_name.message}</span>
           )}
         </div>
       </div>

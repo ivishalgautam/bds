@@ -65,4 +65,7 @@ export const endpoints = {
   buddy: {
     getAll: "/buddy",
   },
+  schedules: {
+    getAll: "/schedules",
+  },
 };
