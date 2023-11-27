@@ -17,6 +17,7 @@ import ChatModel from "./models/chat.model.js";
 import UserModel from "./models/user.model.js";
 import QuizModel from "./models/quiz.model.js";
 import ScheduleModel from "./models/schedules.model.js";
+import GroupInvtModel from "./models/group-invite.model.js";
 
 export default {
   UserModel: UserModel,
@@ -38,4 +39,5 @@ export default {
   AddressModel: AddressModel,
   ChatModel: ChatModel,
   ScheduleModel: ScheduleModel,
+  GroupInvtModel: GroupInvtModel,
 };

@@ -90,6 +90,33 @@ const get = async (sub_franchisee_id) => {
   });
 };
 
+const getDetailsById = async (id) => {
+  let query = `
+        SELECT
+            st.id,
+            st.user_id,
+            usr.username,
+            usr.first_name,
+            usr.last_name,
+            usr.role,
+            usr.profession,
+            usr.image_url,
+            usr.email,
+            CASE WHEN crs.course_name IS NULL THEN NULL ELSE crs.course_name END as course_name,
+            CASE WHEN crs.id IS NULL THEN NULL ELSE crs.id END as course_id
+        FROM 
+            students st
+        INNER JOIN users usr ON usr.id = st.user_id
+        LEFT JOIN users_courses uscr ON uscr.user_id = st.user_id
+        LEFT JOIN courses crs ON crs.id = uscr.course_id
+        WHERE
+            st.id = '${id}';
+    `;
+  return await StudentModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
+};
+
 const getById = async (id) => {
   return await StudentModel.findOne({
     where: {
@@ -146,6 +173,7 @@ export default {
   init,
   create,
   get,
+  getDetailsById,
   getById,
   countStudent,
   getByUserId,

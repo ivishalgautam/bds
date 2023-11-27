@@ -186,13 +186,30 @@ const getStudents = async (req, res) => {
     }
     if (req.user_data.role === "student") {
       const student = await table.StudentModel.getByUserId(req.user_data.id);
-      if (student) {
-        return res.send(
-          await table.StudentModel.get(student.sub_franchisee_id)
-        );
-      } else {
+      if (!student) {
         return res.send([]);
       }
+
+      const batches = await table.BatchModel.get(null, null, student.id);
+
+      const batchStudents = [];
+
+      for (const { students_id } of batches) {
+        for (const id of students_id) {
+          if (student.id !== id) {
+            const record = await table.StudentModel.getById(id);
+
+            if (!record) {
+              return console.error("student not found");
+            }
+
+            const batchStudent = await table.StudentModel.getDetailsById(id);
+            batchStudents.push(batchStudent[0]);
+          }
+        }
+      }
+
+      res.send(batchStudents);
     }
   } catch (error) {
     console.log(error);

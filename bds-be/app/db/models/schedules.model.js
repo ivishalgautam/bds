@@ -1,6 +1,6 @@
 "use strict";
 import constants from "../../lib/constants/index.js";
-import sequelizeFwk, { Sequelize } from "sequelize";
+import sequelizeFwk from "sequelize";
 
 let ScheduleModel = null;
 
