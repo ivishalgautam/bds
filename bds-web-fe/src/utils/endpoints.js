@@ -6,6 +6,7 @@ export const endpoints = {
     username: "/auth/username",
   },
   chat: "/chat",
+  chats: "/chats",
   profile: "/users/me",
   users: "/users",
   meeting: "/meeting",
@@ -64,6 +65,9 @@ export const endpoints = {
   },
   buddy: {
     getAll: "/buddy",
+  },
+  groups: {
+    getAll: "/groups",
   },
   schedules: {
     getAll: "/schedules",

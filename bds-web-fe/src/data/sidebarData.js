@@ -331,4 +331,10 @@ export const AllRoutes = [
     icon: BsShopWindow,
     roles: [ROLES.STUDENT],
   },
+  {
+    label: "Buddy Team",
+    link: "/buddy-team/chat/[id]",
+    icon: BsShopWindow,
+    roles: [ROLES.STUDENT],
+  },
 ];

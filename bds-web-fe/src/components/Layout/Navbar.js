@@ -6,9 +6,25 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import Avatar from "../../assets/avatar.svg";
 import { MainContext } from "@/store/context";
+import { useFetchInvites } from "@/hooks/useFetchGroupInvites";
+import http from "@/utils/http";
+import { endpoints } from "@/utils/endpoints";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+const updateNotification = async ({ invitationId, status }) => {
+  const data = await http().put(
+    `${endpoints.groups.getAll}/invite/${invitationId}`,
+    {
+      status,
+    }
+  );
+
+  return data;
+};
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isNotification, setIsNotification] = useState(false);
+  const queryClient = useQueryClient();
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -47,6 +63,21 @@ function Navbar() {
     );
   };
 
+  const { data: invites, isLoading } = useFetchInvites(isNotification);
+
+  const { mutate } = useMutation(updateNotification, {
+    onSuccess: (data) => {
+      console.log("success");
+      queryClient.invalidateQueries("fetchInvites");
+      queryClient.invalidateQueries("fetchGroups");
+    },
+  });
+
+  const handleNotfication = async (e, invitationId, status) => {
+    e.preventDefault();
+    mutate({ invitationId, status });
+  };
+
   return (
     <div className="bg-white shadow-md h-[80px] flex items-center justify-between px-4 border-b">
       <Image src={Logo} alt="logo" width={160} height={40} priority />
@@ -54,8 +85,68 @@ function Navbar() {
         <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center cursor-pointer">
           <FiSettings className="w-6 h-6" />
         </div>
-        <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center cursor-pointer">
-          <IoMdNotificationsOutline className="w-7 h-7" />
+        <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center cursor-pointer relative">
+          <IoMdNotificationsOutline
+            className="w-7 h-7"
+            onMouseOver={() => setIsNotification(true)}
+          />
+          {isNotification && (
+            <ul
+              className="absolute top-full right-0 bg-white text-black w-96 shadow-lg p-4 rounded-md space-y-4 z-40"
+              onMouseLeave={() => setIsNotification(false)}
+            >
+              {isLoading ? (
+                <p>Loading notifications...</p>
+              ) : invites?.length === 0 ? (
+                <p>No notifications</p>
+              ) : (
+                invites?.map((invite, ind) => (
+                  <li key={invite.id}>
+                    <div className="flex gap-4 mb-2">
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${invite.admin_profile}`}
+                        alt="admin profile"
+                        className="rounded-full w-10 h-10"
+                      />
+                      <div className="space-y-1">
+                        <p className="text-sm text-gray-700">
+                          Group <b>{invite.group_name}</b> invitation by{" "}
+                          <b>{invite.admin}</b>
+                        </p>
+                        <div className="space-x-1">
+                          {invite.is_viewed ? (
+                            <p className="capitalize">{invite.status}</p>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                className="bg-emerald-500 text-white w-20 py-1 rounded-md text-sm font-bold"
+                                onClick={(e) =>
+                                  handleNotfication(e, invite.id, "accepted")
+                                }
+                              >
+                                Join
+                              </button>
+                              <button
+                                type="button"
+                                className="bg-rose-500 text-white w-20 py-1 rounded-md text-sm font-bold"
+                                onClick={(e) =>
+                                  handleNotfication(e, invite.id, "declined")
+                                }
+                              >
+                                Decline
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {invites?.length !== ind + 1 && <hr />}
+                  </li>
+                ))
+              )}
+            </ul>
+          )}
         </div>
         <div className="relative inline-block">
           {user && (

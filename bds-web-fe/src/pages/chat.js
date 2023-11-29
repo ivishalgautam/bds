@@ -79,7 +79,6 @@ function Chat() {
       user.hasNewMessages = false;
     };
 
-    
     if (users?.length === 0 && chat) {
       const transformedChats = getTransformedChat([], chat);
       setUsers(transformedChats);

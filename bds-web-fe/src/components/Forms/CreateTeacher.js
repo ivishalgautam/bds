@@ -58,7 +58,7 @@ function CreateTeacher({ type, id, handleUpdate, userRole, handleCreate }) {
         ]);
       }
     } catch (error) {
-      console.error("Error uploading documents:", error);
+      console.error("Error uploading documents: ", error);
     }
   };
 
