@@ -14,19 +14,31 @@ const init = async (sequelize) => {
         primaryKey: true,
         unique: true,
         type: sequelizeFwk.DataTypes.UUID,
-        default: sequelizeFwk.DataTypes.UUIDV4,
+        defaultValue: sequelizeFwk.DataTypes.UUIDV4,
+      },
+      created_by: {
+        allowNull: false,
+        type: sequelizeFwk.DataTypes.UUID,
       },
       group_id: {
         allowNull: false,
         type: sequelizeFwk.DataTypes.UUID,
       },
-      student_id: {
+      group_name: {
+        allowNull: false,
+        type: sequelizeFwk.DataTypes.STRING,
+      },
+      user_id: {
         allowNull: false,
         type: sequelizeFwk.DataTypes.UUID,
       },
-      is_approved: {
+      status: {
+        type: sequelizeFwk.DataTypes.ENUM("accepted", "declined", ""),
+        defaultValue: "",
+      },
+      is_viewed: {
         type: sequelizeFwk.DataTypes.BOOLEAN,
-        default: false,
+        defaultValue: false,
       },
     },
     {
@@ -38,21 +50,30 @@ const init = async (sequelize) => {
   await GroupInvtModel.sync({ alter: true });
 };
 
-const create = async (group_id, student_id, user_id) => {
+const create = async (group_id, group_name, user_id, created_by) => {
   return await GroupInvtModel.create({
     group_id: group_id,
-    student_id: student_id,
+    group_name: group_name,
+    user_id: user_id,
+    created_by: created_by,
   });
 };
 
-const get = async (student_id) => {
+const get = async (user_id) => {
   let query = `
         SELECT 
-            grpinvt.*,
-            grp.group_name
+            grpinvt.is_viewed,
+            grpinvt.status,
+            grpinvt.id,
+            grpinvt.created_at,
+            grpinvt.updated_at,
+            grp.group_name,
+            CONCAT(usr.first_name, ' ', usr.last_name) AS admin,
+            usr.image_url as admin_profile
         from group_invitations grpinvt
         LEFT JOIN groups grp ON grp.id = grpinvt.group_id
-        WHERE student_id = '${student_id}';
+        LEFT JOIN users usr ON usr.id = grpinvt.created_by
+        WHERE grpinvt.user_id = '${user_id}' ORDER BY grpinvt.created_at DESC;
     `;
 
   return await GroupInvtModel.sequelize.query(query, {
@@ -60,8 +81,34 @@ const get = async (student_id) => {
   });
 };
 
+const getById = async (invitation_id) => {
+  return await GroupInvtModel.findOne({
+    where: {
+      id: invitation_id,
+    },
+  });
+};
+
+const update = async (invitation_id, status) => {
+  return await GroupInvtModel.update(
+    {
+      status: status,
+      is_viewed: true,
+    },
+    {
+      where: {
+        id: invitation_id,
+      },
+      returning: true,
+      plain: true,
+    }
+  );
+};
+
 export default {
   init,
   create,
   get,
+  getById,
+  update,
 };

@@ -63,7 +63,7 @@ const constants = {
     NOTES_TABLE: "notes",
     GROUP_TABLE: "groups",
     SCHEDULE_TABLE: "schedules",
-    GROUP_INVITATION_TABLE: "group_invitatons",
+    GROUP_INVITATION_TABLE: "group_invitations",
   },
   bcrypt: {
     SALT_ROUNDS: 10,

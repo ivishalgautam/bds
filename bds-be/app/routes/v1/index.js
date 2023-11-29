@@ -18,7 +18,8 @@ import notesRoutes from "../../api/notes/routes.js";
 import buddyRoutes from "../../api/buddy/routes.js";
 import meetingRoutes from "../../api/live_streaming/routes.js";
 import schedulesRoutes from "../../api/schedules/routes.js";
-import groupInvitesRoutes from "../../api/group-invite/routes.js";
+import groupRoutes from "../../api/groups/routes.js";
+import chatRoutes from "../../api/chat/routes.js";
 
 export default async function routes(fastify, options) {
   fastify.addHook("onRequest", jwtVerify.verifyToken);
@@ -41,5 +42,6 @@ export default async function routes(fastify, options) {
   fastify.register(buddyRoutes, { prefix: "buddy" });
   fastify.register(meetingRoutes, { prefix: "meeting" });
   fastify.register(schedulesRoutes, { prefix: "schedules" });
-  fastify.register(groupInvitesRoutes, { prefix: "groups" });
+  fastify.register(groupRoutes, { prefix: "groups" });
+  fastify.register(chatRoutes, { prefix: "chats" });
 }

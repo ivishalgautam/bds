@@ -56,7 +56,7 @@ const init = async (sequelize) => {
   await ChatModel.sync({ alter: true });
 };
 
-const create = async (message, message_from, message_to, groupId) => {
+const create = async (message, message_from, message_to, group_id) => {
   let record;
   record = {
     message: message,
@@ -67,8 +67,8 @@ const create = async (message, message_from, message_to, groupId) => {
     record.message_to = message_to;
   }
 
-  if (groupId) {
-    record.group_chat_id = groupId;
+  if (group_id) {
+    record.group_chat_id = group_id;
   }
 
   return await ChatModel.create(record);
@@ -98,6 +98,34 @@ const update = async (message, message_from, message_to, groupId) => {
   });
 };
 
+const get = async (req) => {
+  let query = `
+        SELECT 
+          cht.message,
+          cht.message_from as message_from_id,
+          cht.created_at,
+          cht.updated_at,
+          CONCAT(usr.first_name, ' ', usr.last_name) as message_from_fullname,
+          usr.image_url,
+          usr.profession,
+          usr.role
+        FROM chats cht
+        JOIN users usr ON cht.message_from = usr.id OR cht.message_to = usr.id
+        WHERE
+          cht.group_chat_id = '${req.params.group_chat_id}' 
+        ORDER BY cht.created_at
+        `;
+  // WHERE
+  //   cht.message_to = '${req.user_data.id}'
+  // OR
+  //   cht.message_from = '${req.user_data.id}'
+  // AND
+
+  return await ChatModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
+};
+
 const getChats = async (req) => {
   let query = `
         SELECT DISTINCT
@@ -107,9 +135,12 @@ const getChats = async (req) => {
             usr.image_url
         FROM chats cht
         JOIN users usr ON cht.message_from = usr.id OR cht.message_to = usr.id  
-        WHERE cht.message_to = '${req.user_data.id}'
-        OR cht.message_from = '${req.user_data.id}'    
-        
+        WHERE 
+            cht.message_to = '${req.user_data.id}' 
+        OR 
+            cht.message_from = '${req.user_data.id}' 
+        AND 
+            cht.group_chat_id = '${req.params.group_chat_id}'  
     `;
 
   return await ChatModel.sequelize.query(query, {
@@ -137,6 +168,7 @@ export default {
   init,
   create,
   update,
+  get,
   getChats,
   getById,
   deleteById,

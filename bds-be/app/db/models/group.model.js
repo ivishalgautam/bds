@@ -46,7 +46,7 @@ const create = async (req, users) => {
   return await GroupModel.create({
     group_name: req.body?.group_name || req.body?.batch_name,
     group_admin: req.body?.group_admin || [req.body.teacher_id],
-    // group_users: req.body?.group_users || users,
+    group_users: [req.user_data.id],
     group_image: req.body?.group_image,
   });
 };
@@ -69,6 +69,61 @@ const update = async (req) => {
   );
 };
 
+const addToGroup = async (prev_users, new_user, group_id) => {
+  return await GroupModel.update(
+    {
+      group_users: [...prev_users, new_user],
+    },
+    {
+      where: {
+        id: group_id,
+      },
+    }
+  );
+};
+
+const get = async (req) => {
+  let query = `
+  SELECT
+      *
+      FROM groups grp
+      WHERE grp.group_users @> '["${req.user_data.id}"]'::jsonb
+      ORDER BY grp.created_at
+  `;
+  return await GroupModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
+};
+
+const getGroupMembers = async (group_id) => {
+  let query = `
+      SELECT
+          CONCAT(usr.first_name, ' ', usr.last_name) as fullname,
+          usr.image_url
+      FROM groups grp
+      JOIN users usr ON usr.id = ANY(SELECT jsonb_array_elements_text(grp.group_users)::uuid)
+      WHERE grp.id = '${group_id}'
+      ORDER BY grp.created_at
+  `;
+  return await GroupModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
+};
+
+const countUserGroup = async (req) => {
+  let query = `
+  SELECT 
+      count(*)::integer as total_groups
+      FROM groups grp
+      WHERE '${req.user_data.id}' = ANY(grp.group_admin) 
+  `;
+  return await GroupModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+    returning: true,
+    plain: true,
+  });
+};
+
 const getById = async (req, id) => {
   return await GroupModel.findOne({
     where: {
@@ -87,8 +142,12 @@ const deleteById = async (req) => {
 
 export default {
   init,
+  get,
   create,
   update,
   getById,
   deleteById,
+  addToGroup,
+  countUserGroup,
+  getGroupMembers,
 };

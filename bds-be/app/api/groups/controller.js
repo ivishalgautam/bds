@@ -1,14 +1,31 @@
 "use strict";
-
 import table from "../../db/models.js";
+
+const getUserGroups = async (req, res) => {
+  try {
+    const data = await table.GroupModel.get(req);
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+    res.send(error);
+  }
+};
 
 const create = async (req, res) => {
   const { group_users } = req.body;
-  console.log({ invite: req.body });
+  // console.log({ invite: req.body });
   try {
+    const { total_groups } = await table.GroupModel.countUserGroup(req);
+    // return console.log({ userGroupCount });
+
+    if (total_groups >= 2) {
+      return res
+        .code(400)
+        .send({ message: "You cannot create more than 2 groups!" });
+    }
+
     for (const userId of group_users) {
       const userRecord = await table.UserModel.getById(req, userId);
-      // console.log({ userId });
       if (!userRecord) {
         return res.code(404).send({ message: "user not found!" });
       }
@@ -40,6 +57,16 @@ const get = async (req, res) => {
 
     const records = await table.GroupInvtModel.get(userRecord.id);
     res.send(records);
+  } catch (error) {
+    console.error(error);
+    res.code(500).send(error);
+  }
+};
+
+const getGroupMembers = async (req, res) => {
+  try {
+    const data = await table.GroupModel.getGroupMembers(req.params.group_id);
+    res.send(data);
   } catch (error) {
     console.error(error);
     res.code(500).send(error);
@@ -87,4 +114,6 @@ export default {
   create,
   get,
   update,
+  getUserGroups,
+  getGroupMembers,
 };
