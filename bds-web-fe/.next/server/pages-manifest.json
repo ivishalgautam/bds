@@ -3,6 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/buddy-team/chat/[id]": "pages/buddy-team/chat/[id].js",
-  "/recordings": "pages/recordings.js",
-  "/buddy-team": "pages/buddy-team.js"
+  "/support": "pages/support.js",
+  "/shop": "pages/shop.js"
 }

@@ -4,7 +4,7 @@ import http from "@/utils/http";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Members from "../../../assets/members.svg";
 import Community from "../../../assets/community.svg";
 import Avatar from "../../../assets/avatar.svg";
@@ -13,6 +13,8 @@ import Spinner from "@/components/Spinner";
 import { FaTelegramPlane } from "react-icons/fa";
 import toast from "react-hot-toast";
 import moment from "moment";
+import { io } from "socket.io-client";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 const postMessage = async ({ message, message_from, group_id }) => {
   //   console.log({ message, message_from, group_id });
@@ -24,8 +26,10 @@ const postMessage = async ({ message, message_from, group_id }) => {
 };
 
 export default function Chat() {
+  const [chats, setChats] = useState(null);
   const { user } = useContext(MainContext);
   const [messageInput, setMessageInput] = useState("");
+  const socketRef = useRef();
   const router = useRouter();
   const { id: group_chat_id } = router.query;
   const messagesEndRef = useRef(null);
@@ -40,7 +44,7 @@ export default function Chat() {
     );
   };
 
-  const { data: chats, isLoading: chatsLoading } = useQuery({
+  const { data: fetchedChats, isLoading: chatsLoading } = useQuery({
     queryKey: ["fetchChats"],
     queryFn: fetchChats,
     enabled: !!group_chat_id,
@@ -60,24 +64,72 @@ export default function Chat() {
       toast.error("Unable to send message!");
     },
   });
-  console.log({ chats });
 
   const onMessage = (e, content) => {
     e.preventDefault();
+
     mutate({
       message: content,
       message_from: user?.id,
       group_id: group_chat_id,
     });
+
+    socketRef.current.send(
+      JSON.stringify({
+        event: "message",
+        group_id: group_chat_id,
+        user: user,
+        message: content,
+      })
+    );
+
     setMessageInput("");
   };
+
+  useEffect(() => {
+    socketRef.current = new ReconnectingWebSocket("ws://localhost:3001");
+
+    socketRef.current.addEventListener("open", (event) => {
+      console.log("WebSocket connected!", event);
+    });
+
+    socketRef.current.addEventListener("message", (event) => {
+      const parsedData = JSON.parse(event.data);
+      if (parsedData.group_chat_id === group_chat_id) {
+        setChats((prev) => [...prev, parsedData]);
+      }
+    });
+
+    socketRef.current.addEventListener("close", () => {
+      console.log("WebSocket closed");
+    });
+
+    return () => {
+      socketRef.current.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef?.current?.scrollIntoView({ behavior: "smooth" });
+    return () => {
+      console.log("chat unmount 0");
+    };
+  }, [chats]);
+
+  useEffect(() => {
+    if (fetchedChats && fetchedChats.length > 0) {
+      setChats(fetchedChats);
+      // console.log(fetchedChats);
+    }
+  }, [fetchedChats]);
+
   return (
     <div className="space-y-6">
       <Title text="Community Chat" />
       <div className="flex gap-4">
         <div className="w-1/3 bg-white rounded-xl">
           <div className="bg-primary rounded-xl px-8 py-2 text-white flex items-center gap-6">
-            <Image src={Members} className="w-20" />
+            <Image src={Members} className="w-20" alt="members" />
             <div>
               <h2 className="text-xl font-mulish font-bold">Members</h2>
               {groupMembersLoading ? (
@@ -128,7 +180,6 @@ export default function Chat() {
           </div>
           <div className="h-96 relative">
             <div className="p-4 h-[80%]	 overflow-y-scroll space-y-2">
-              <ul className="messages"></ul>
               {chatsLoading ? (
                 <div className="flex justify-center">
                   <Spinner />
@@ -136,54 +187,51 @@ export default function Chat() {
               ) : chats?.length === 0 ? (
                 <p className="text-center">No chats</p>
               ) : (
-                chats?.map((chat, index) => (
-                  <div
-                    className={`flex items-start justify-start gap-2 ${
-                      user?.id !== chat.message_from_id
-                        ? ""
-                        : "flex-row-reverse"
-                    }`}
-                  >
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${chat.image_url}`}
-                      alt={chat.message_from_fullname}
-                      className="w-12 h-12 rounded-full"
-                    />
-                    <div
+                <ul className="messages space-y-2">
+                  {chats?.map((chat, index) => (
+                    <li
                       key={index}
-                      className={`shadow-md p-[0.7rem] rounded-lg ${
-                        user?.id !== chat.message_from_id
+                      className={`flex items-start justify-start gap-2 ${
+                        user?.id !== chat?.message_from_id
                           ? ""
-                          : "bg-primary text-white"
+                          : "flex-row-reverse"
                       }`}
                     >
-                      <div className="flex justify-between items-center capitalize gap-10">
-                        {/* {user?.id === chat.message_from_id ? (
-                          <h3>me</h3>
-                        ) : (
-                          <>
-                          </>
-                        )} */}
-                        <h3 className="text-xs font-bold">
-                          ~{chat.message_from_fullname}
-                        </h3>
-                        <p className="text-xs">{chat.role}</p>
-                      </div>
-                      <p className="text-[12px]">{chat?.message}</p>
-                      <span
-                        className={`text-[10px] ${
-                          user?.id !== chat.message_from_id
-                            ? "text-gray-400"
-                            : "text-white"
-                        } font-semibold`}
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${chat?.image_url}`}
+                        alt={chat?.message_from_fullname}
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div
+                        key={index}
+                        className={`shadow-md p-[0.7rem] rounded-lg ${
+                          user?.id !== chat?.message_from_id
+                            ? ""
+                            : "bg-primary text-white"
+                        }`}
                       >
-                        {new Date(chat?.created_at).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                        <div className="flex justify-between items-center capitalize gap-10">
+                          <h3 className="text-xs font-bold">
+                            ~{chat?.message_from_fullname}
+                          </h3>
+                          <p className="text-xs">{chat?.role}</p>
+                        </div>
+                        <p className="text-[12px]">{chat?.message}</p>
+                        <span
+                          className={`text-[10px] ${
+                            user?.id !== chat?.message_from_id
+                              ? "text-gray-400"
+                              : "text-white"
+                          } font-semibold`}
+                        >
+                          {new Date(chat?.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                  <li ref={messagesEndRef} />
+                </ul>
               )}
-              <div ref={messagesEndRef} />
             </div>
             <form
               className="flex items-center gap-4 absolute bottom-4 w-full p-4"
