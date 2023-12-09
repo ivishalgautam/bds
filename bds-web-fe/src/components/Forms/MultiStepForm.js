@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef} from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
 import Title from "../Title";
@@ -13,6 +13,7 @@ import Modal from "@/components/Modal";
 import DocViewerApp from "@/components/DocViewerApp";
 import toast from "react-hot-toast";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { isObject } from "@/utils/object";
 
 function MultiStepForm({ type, id, action, title }) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -149,6 +150,7 @@ function MultiStepForm({ type, id, action, title }) {
       role: type === "master" ? "master_franchisee" : "sub_franchisee",
       mobile_number: data.mobile_number,
     };
+
     const selectedDistricts = data.districts.map((district) => district.value);
 
     const addressPayload = {
@@ -231,7 +233,11 @@ function MultiStepForm({ type, id, action, title }) {
       // Process the responses or perform additional operations
     } catch (error) {
       // Handle any errors that occur during the API requests
-      console.error("Error:", error.message);
+      if (isObject(error)) {
+        toast.error(error.message);
+      } else {
+        toast.error(JSON.stringify(error));
+      }
     }
   };
 

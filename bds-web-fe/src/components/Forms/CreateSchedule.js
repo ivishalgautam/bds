@@ -115,7 +115,7 @@ function CreateSchedule({
 
         {/* start time */}
         <div>
-          {/* <label htmlFor="courseName">Course Name</label> */}
+          <label htmlFor="courseName">Start time</label>
           <input
             type="date"
             id="courseName"
@@ -130,7 +130,7 @@ function CreateSchedule({
 
         {/* end time */}
         <div>
-          {/* <label htmlFor="courseName">Course Name</label> */}
+          <label htmlFor="courseName">End time</label>
           <input
             type="date"
             id="courseName"

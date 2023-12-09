@@ -1,4 +1,5 @@
 import { MainContext } from "@/store/context";
+import Link from "next/link";
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { MdHomeWork, MdOutlineQuiz } from "react-icons/md";
@@ -12,7 +13,7 @@ const CourseAccordion = ({
   handleWeekComplete,
   type,
 }) => {
-  // console.log(homeworks[0]?.homework[0].day_wise);
+  // console.log({ data });
   const { user } = useContext(MainContext);
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -34,11 +35,11 @@ const CourseAccordion = ({
           >
             <p className="font-bold font-mulish text-lg">Week {item.weeks}</p>
             {type === "class" && getQuiz(item.weeks)?.length > 0 && (
-              <a
+              <Link
                 href={
-                  getQuiz(item.weeks)[0]?.is_disabled
-                    ? null
-                    : `/${getQuiz(item.weeks)[0]?.id}`
+                  !getQuiz(item.weeks)[0]?.is_disabled
+                    ? "#"
+                    : `/batches/quiz/${batchId}?w=${item.weeks}`
                 }
                 className={`ml-auto mr-10 text-xs font-semibold ${
                   getQuiz(item.weeks)[0]?.is_disabled && "cursor-not-allowed"
@@ -46,7 +47,7 @@ const CourseAccordion = ({
               >
                 <MdOutlineQuiz size={25} className="text-primary" />
                 Quiz
-              </a>
+              </Link>
             )}
             <svg
               className={`w-5 h-5 transition-transform duration-300 ${

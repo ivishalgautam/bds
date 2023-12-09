@@ -78,7 +78,7 @@ function Recordings() {
             </div>
           </Link>
         )}
-        {data.map((item) => (
+        {data?.map((item) => (
           <div className="bg-white rounded-xl overflow-hidden" key={item.id}>
             <img src={item.thumbnail} alt="" className="w-full aspect-video" />
             <div className="space-y-4 bg-white p-6  font-mulish">

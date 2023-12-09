@@ -273,7 +273,7 @@ function CreateQuiz({ type }) {
           )}
           <div className="grid grid-cols-2 gap-4">
             {question.options.map((option, optionIndex) => (
-              <div key={option.id}>
+              <div key={optionIndex}>
                 {type === "view" && (
                   <label htmlFor={`option-${index}-${optionIndex}`}>
                     {" "}

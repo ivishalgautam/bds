@@ -52,12 +52,9 @@ export default function Schedules() {
     queryKey: ["schedules", batchId],
     queryFn: () => (batchId ? fetchSchedules(batchId) : Promise.resolve()),
   });
-  // console.log({ meeting: data });
 
   useEffect(() => {
-    if (data?.length > 0) {
-      setMeetings(data);
-    }
+    setMeetings(data);
   }, [data]);
 
   const createMutation = useMutation(createSchedule, {
@@ -128,7 +125,7 @@ export default function Schedules() {
         >
           <div className="flex flex-col items-center justify-center space-y-4">
             <AiOutlinePlus className="text-5xl bg-primary p-2 text-white rounded-full" />
-            <p className="font-bold font-mulish text-lg">Create Batch</p>
+            <p className="font-bold font-mulish text-lg">Create Schedule</p>
           </div>
         </div>
       )}

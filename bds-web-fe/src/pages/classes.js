@@ -46,7 +46,7 @@ export default function Classes() {
     console.log({ batches: data });
   }, [data]);
 
-  // console.log({ batches: data });
+  console.log({ batches: data });
 
   const queryClient = useQueryClient();
 

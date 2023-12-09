@@ -201,6 +201,12 @@ export const AllRoutes = [
     roles: [ROLES.SUB_FRANCHISEE, ROLES.TEACHER],
   },
   {
+    label: "Batches",
+    link: "/batches/quiz/[id]",
+    icon: MdBook,
+    roles: [ROLES.STUDENT],
+  },
+  {
     label: "Homework",
     link: "/homework",
     icon: MdSpeakerNotes,
@@ -329,12 +335,12 @@ export const AllRoutes = [
     label: "Buddy Team",
     link: "/buddy-team",
     icon: BsShopWindow,
-    roles: [ROLES.STUDENT],
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
   },
   {
     label: "Buddy Team",
-    link: "/buddy-team/chat/[id]",
+    link: "/buddy-team/[id]",
     icon: BsShopWindow,
-    roles: [ROLES.STUDENT],
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
   },
 ];

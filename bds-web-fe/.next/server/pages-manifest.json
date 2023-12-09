@@ -2,7 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/buddy-team/chat/[id]": "pages/buddy-team/chat/[id].js",
-  "/support": "pages/support.js",
-  "/shop": "pages/shop.js"
+  "/batches/quiz/[id]": "pages/batches/quiz/[id].js",
+  "/classes": "pages/classes.js"
 }
