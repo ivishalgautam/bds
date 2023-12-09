@@ -32,6 +32,10 @@ const init = async (sequelize) => {
         allowNull: false,
         defaultValue: [],
       },
+      is_community: {
+        type: sequelizeFwk.DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
     {
       createdAt: "created_at",
@@ -42,12 +46,21 @@ const init = async (sequelize) => {
   await GroupModel.sync({ alter: true });
 };
 
-const create = async (req, users) => {
+const create = async (req, user_ids = []) => {
+  console.log({ id: req.user_data.id });
   return await GroupModel.create({
     group_name: req.body?.group_name || req.body?.batch_name,
     group_admin: req.body?.group_admin || [req.body.teacher_id],
-    group_users: [req.user_data.id],
+    group_users: [req.user_data.id, ...user_ids],
     group_image: req.body?.group_image,
+  });
+};
+
+const createCommunityGroup = async (group_name, group_admin) => {
+  return await GroupModel.create({
+    group_name: group_name,
+    group_admin: [group_admin],
+    group_users: [group_admin],
   });
 };
 
@@ -84,12 +97,12 @@ const addToGroup = async (prev_users, new_user, group_id) => {
 
 const get = async (req) => {
   let query = `
-  SELECT
-      *
-      FROM groups grp
-      WHERE grp.group_users @> '["${req.user_data.id}"]'::jsonb
-      ORDER BY grp.created_at
-  `;
+        SELECT
+            *
+          FROM groups grp
+          WHERE grp.group_users @> '["${req.user_data.id}"]'::jsonb
+          ORDER BY grp.created_at
+        `;
   return await GroupModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,
   });
@@ -150,4 +163,5 @@ export default {
   addToGroup,
   countUserGroup,
   getGroupMembers,
+  createCommunityGroup,
 };

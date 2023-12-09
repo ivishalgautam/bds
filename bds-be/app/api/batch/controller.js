@@ -7,6 +7,7 @@ const create = async (req, res) => {
     let teacher;
     let record;
     let user_ids = [];
+
     if (req.user_data.role === "sub_franchisee") {
       record = await table.FranchiseeModel.getByUserId(req);
       if (!record) {
@@ -47,14 +48,14 @@ const create = async (req, res) => {
     for (const student_id of req.body.students_ids) {
       const student = await table.StudentModel.getById(student_id);
       if (!student) {
-        return res.send(
-          "not_found",
-          `student not found. Invalid student id:- ${student_id}`
-        );
-        return;
+        return res.send({
+          message: `student not found. Invalid student id:- ${student_id}`,
+        });
       }
       user_ids.push(student.user_id);
     }
+    console.log(user_ids);
+
     const course = await table.CourseModel.getById(req);
     if (!course) {
       return res.send(
@@ -94,9 +95,8 @@ const create = async (req, res) => {
     );
 
     await table.GroupModel.create(req, user_ids);
-    return res.send({
-      message: "New batch created.",
-    });
+
+    return res.send({ message: "New batch created" });
   } catch (error) {
     console.log(error);
     return res.send(error);
@@ -230,8 +230,9 @@ const getById = async (req, res) => {
   try {
     const record = await table.BatchModel.getById(req);
     if (!record) {
-      return res.send("not_found", "batch not exists in our database");
-      return;
+      return res
+        .code(404)
+        .send({ message: "batch not exists in our database" });
     }
     return res.send(record);
   } catch (error) {

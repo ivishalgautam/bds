@@ -86,6 +86,7 @@ const update = async (req) => {
     }
   );
 };
+
 const get = async () => {
   let query = `
         SELECT 
@@ -106,7 +107,8 @@ const get = async () => {
 };
 
 const getById = async (req, fran_id) => {
-  console.log(req.params, fran_id);
+  // console.log(req.params, fran_id);
+  console.log({ fran_id });
   return await FranchiseeModel.findOne({
     where: {
       id: req?.params?.id || fran_id,

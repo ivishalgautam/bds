@@ -6,14 +6,16 @@ import hash from "../../lib/encryption/index.js";
 const create = async (req, res) => {
   try {
     const record = await table.UserModel.getByUsername(req);
+
     if (record) {
-      return res.send(
-        "username_already_exists",
-        "User already exists with username. Please try with different username"
-      );
-      return;
+      return res.code(409).send({
+        message:
+          "User already exists with username. Please try with different username",
+      });
     }
+
     const user = await table.UserModel.create(req);
+
     if (req.user_data.role === "sub_franchisee") {
       const franchisee = await table.FranchiseeModel.getByUserId(req);
       if (user.role === "student") {
@@ -23,6 +25,7 @@ const create = async (req, res) => {
           franchisee.id
         );
       }
+
       if (user.role === "teacher") {
         await table.TeacherModel.create(
           user.id,
@@ -31,6 +34,7 @@ const create = async (req, res) => {
         );
       }
     }
+
     return res.send(user);
   } catch (error) {
     console.log(error);

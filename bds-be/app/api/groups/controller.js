@@ -26,6 +26,7 @@ const create = async (req, res) => {
 
     for (const userId of group_users) {
       const userRecord = await table.UserModel.getById(req, userId);
+
       if (!userRecord) {
         return res.code(404).send({ message: "user not found!" });
       }
