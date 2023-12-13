@@ -64,6 +64,8 @@ const constants = {
     GROUP_TABLE: "groups",
     SCHEDULE_TABLE: "schedules",
     GROUP_INVITATION_TABLE: "group_invitations",
+    RESULT_TABLE: "results",
+    HOMEWROKK_UPLOAD_TABLE: "homework_uploads",
   },
   bcrypt: {
     SALT_ROUNDS: 10,

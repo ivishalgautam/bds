@@ -3,11 +3,13 @@
 import controller from "./controller.js";
 
 export default async function routes(fastify, options) {
-    fastify.get("/", {}, controller.get);
-    fastify.get("/:id", {}, controller.getById);
+  fastify.get("/", {}, controller.get);
+  fastify.get("/:id", {}, controller.getById);
 
-    fastify.post("/", {}, controller.create);
+  fastify.post("/", {}, controller.create);
 
-    fastify.put("/:id", {}, controller.update);
-    fastify.delete("/:id", {}, controller.deleteById);
+  fastify.put("/:id", {}, controller.update);
+  fastify.delete("/:id", {}, controller.deleteById);
+  fastify.post("/upload-homework", {}, controller.uploadHomework);
+  fastify.get("/my-homeworks", {}, controller.getUploadedHomeworks);
 }

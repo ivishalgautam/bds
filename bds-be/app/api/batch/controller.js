@@ -3,6 +3,7 @@
 import table from "../../db/models.js";
 
 const create = async (req, res) => {
+  // console.log(req.body);
   try {
     let teacher;
     let record;
@@ -11,23 +12,22 @@ const create = async (req, res) => {
     if (req.user_data.role === "sub_franchisee") {
       record = await table.FranchiseeModel.getByUserId(req);
       if (!record) {
-        return res.send(
-          "not_found",
-          "master franchisee not exists. Please contact us our support team"
-        );
-        return;
+        return res.code(404).send({
+          message:
+            "master franchisee not exists. Please contact us our support team",
+        });
       }
       if (!req.body.teacher_id) {
-        return res.send("bad_request", "teacher_id is required parameter");
-        return;
+        return res
+          .code(400)
+          .send({ message: "teacher_id is required parameter" });
       }
       teacher = await table.TeacherModel.getById(req.body.teacher_id);
       if (!teacher) {
-        return res.send(
-          "not_found",
-          "teacher not exists. Please create new teacher or assign valid teacher"
-        );
-        return;
+        return res.code(404).send({
+          message:
+            "teacher not exists. Please create new teacher or assign valid teacher",
+        });
       }
       user_ids.push(teacher.user_id);
     }
@@ -35,11 +35,10 @@ const create = async (req, res) => {
     if (req.user_data.role === "teacher") {
       teacher = await table.TeacherModel.getByUserId(req.user_data.id);
       if (!teacher) {
-        return res.send(
-          "not_found",
-          "teacher not exists. Please create new teacher or assign valid teacher"
-        );
-        return;
+        return res.code(404).send({
+          message:
+            "teacher not exists. Please create new teacher or assign valid teacher",
+        });
       }
       req.body.teacher_id = teacher?.id;
       user_ids.push(teacher.user_id);
@@ -54,15 +53,13 @@ const create = async (req, res) => {
       }
       user_ids.push(student.user_id);
     }
-    console.log(user_ids);
+    // console.log(user_ids);
 
     const course = await table.CourseModel.getById(req);
     if (!course) {
-      return res.send(
-        "not_found",
-        "course not exists. Please assign valid course"
-      );
-      return;
+      return res
+        .code(404)
+        .send({ message: "course not exists. Please assign valid course" });
     }
 
     const course_syllabus = course.course_syllabus.map((s) => {
@@ -93,6 +90,19 @@ const create = async (req, res) => {
       course_syllabus,
       quiz
     );
+
+    user_ids.forEach(async (studentId) => {
+      console.log({ studentId });
+      await table.CourseAssignModel.create({
+        body: {
+          course_name: course.course_name,
+          status: "ASSIGNED",
+          course_id: course.id,
+          user_id: studentId,
+        },
+        user_data: { id: req.user_data.id },
+      });
+    });
 
     await table.GroupModel.create(req, user_ids);
 
@@ -133,7 +143,6 @@ const update = async (req, res) => {
           message:
             "teacher not exists. Please create new teacher or assign valid teacher",
         });
-        return;
       }
     }
 
@@ -144,7 +153,6 @@ const update = async (req, res) => {
           return res.code(404).send({
             message: `student not found. Invalid student id:- ${student_id}`,
           });
-          return;
         }
       }
     }
@@ -155,7 +163,6 @@ const update = async (req, res) => {
         return res
           .code(404)
           .send({ message: "course not exists. Please assign valid course" });
-        return;
       }
     }
 

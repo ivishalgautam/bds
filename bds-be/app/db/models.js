@@ -18,6 +18,8 @@ import UserModel from "./models/user.model.js";
 import QuizModel from "./models/quiz.model.js";
 import ScheduleModel from "./models/schedules.model.js";
 import GroupInvtModel from "./models/group-invite.model.js";
+import ResultModel from "./models/result.model.js";
+import HomeworkUploadModel from "./models/homework-upload.model.js";
 
 export default {
   UserModel: UserModel,
@@ -40,4 +42,6 @@ export default {
   ChatModel: ChatModel,
   ScheduleModel: ScheduleModel,
   GroupInvtModel: GroupInvtModel,
+  ResultModel: ResultModel,
+  HomeworkUploadModel: HomeworkUploadModel,
 };

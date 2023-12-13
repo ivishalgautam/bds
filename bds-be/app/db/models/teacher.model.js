@@ -5,64 +5,64 @@ import sequelizeFwk from "sequelize";
 let TeacherModel = null;
 
 const init = async (sequelize) => {
-    TeacherModel = sequelize.define(
-        constants.models.TEACHER_TABLE,
-        {
-            id: {
-                allowNull: false,
-                primaryKey: true, 
-                type: sequelizeFwk.DataTypes.UUID,
-                defaultValue: sequelizeFwk.DataTypes.UUIDV4,
-            },
-            user_id: {
-                type: sequelizeFwk.DataTypes.UUID,
-                onDelete: "CASCADE",
-                references: {
-                    model: constants.models.USER_TABLE,
-                    key: "id",
-                    allowNull: false,
-                    deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-                },
-            },
-            franchisee_id: {
-                type: sequelizeFwk.DataTypes.UUID,
-                onDelete: "CASCADE",
-                references: {
-                    model: constants.models.FRANCHISEE_TABLE,
-                    key: "id",
-                    allowNull: false,
-                    deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-                },
-            },
-            sub_franchisee_id: {
-                type: sequelizeFwk.DataTypes.UUID,
-                onDelete: "CASCADE",
-                references: {
-                    model: constants.models.FRANCHISEE_TABLE,
-                    key: "id",
-                    allowNull: false,
-                    deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
-                },
-            },
+  TeacherModel = sequelize.define(
+    constants.models.TEACHER_TABLE,
+    {
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        type: sequelizeFwk.DataTypes.UUID,
+        defaultValue: sequelizeFwk.DataTypes.UUIDV4,
+      },
+      user_id: {
+        type: sequelizeFwk.DataTypes.UUID,
+        onDelete: "CASCADE",
+        references: {
+          model: constants.models.USER_TABLE,
+          key: "id",
+          allowNull: false,
+          deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
         },
-        {
-            createdAt: "created_at",
-            updatedAt: "updated_at",
-        }
-    );
-    await TeacherModel.sync({ alter: true });
+      },
+      franchisee_id: {
+        type: sequelizeFwk.DataTypes.UUID,
+        onDelete: "CASCADE",
+        references: {
+          model: constants.models.FRANCHISEE_TABLE,
+          key: "id",
+          allowNull: false,
+          deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
+        },
+      },
+      sub_franchisee_id: {
+        type: sequelizeFwk.DataTypes.UUID,
+        onDelete: "CASCADE",
+        references: {
+          model: constants.models.FRANCHISEE_TABLE,
+          key: "id",
+          allowNull: false,
+          deferrable: sequelizeFwk.Deferrable.INITIALLY_IMMEDIATE,
+        },
+      },
+    },
+    {
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    }
+  );
+  await TeacherModel.sync({ alter: true });
 };
 
 const create = async (user_id, franchisee_id, sub_franchisee_id) => {
-    return await TeacherModel.create({
-        user_id: user_id,
-        franchisee_id: franchisee_id,
-        sub_franchisee_id: sub_franchisee_id,
-    });
+  return await TeacherModel.create({
+    user_id: user_id,
+    franchisee_id: franchisee_id,
+    sub_franchisee_id: sub_franchisee_id,
+  });
 };
 
 const get = async (sub_franchisee_id) => {
-    let query = `
+  let query = `
         SELECT
             tch.id,
             tch.user_id,
@@ -82,43 +82,43 @@ const get = async (sub_franchisee_id) => {
         WHERE
             tch.sub_franchisee_id = '${sub_franchisee_id}'
     `;
-    return await TeacherModel.sequelize.query(query, {
-        type: sequelizeFwk.QueryTypes.SELECT,
-    });
+  return await TeacherModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
 };
 
 const getById = async (id) => {
-    return await TeacherModel.findOne({
-        where: {
-            id: id,
-        },
-    });
+  return await TeacherModel.findOne({
+    where: {
+      id: id,
+    },
+  });
 };
 
 const getByUserId = async (user_id) => {
-    return await TeacherModel.findOne({
-        where: {
-            user_id: user_id,
-        },
-    });
+  return await TeacherModel.findOne({
+    where: {
+      user_id: user_id,
+    },
+  });
 };
 
 const getUserIdsBySubFranchisee = async (franchisee_id) => {
-    const result = await TeacherModel.findAll({
-        where: {
-            sub_franchisee_id: franchisee_id,
-        },
-        attributes: ["user_id"],
-        raw: true,
-    });
-    return result.map((row) => row.user_id);
+  const result = await TeacherModel.findAll({
+    where: {
+      sub_franchisee_id: franchisee_id,
+    },
+    attributes: ["user_id"],
+    raw: true,
+  });
+  return result.map((row) => row.user_id);
 };
 
 export default {
-    init,
-    create,
-    get,
-    getById,
-    getByUserId,
-    getUserIdsBySubFranchisee,
+  init,
+  create,
+  get,
+  getById,
+  getByUserId,
+  getUserIdsBySubFranchisee,
 };
