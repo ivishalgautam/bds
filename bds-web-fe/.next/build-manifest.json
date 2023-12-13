@@ -22,15 +22,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/batches/quiz/[id]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/batches/quiz/[id].js"
-    ],
     "/classes": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/classes.js"
+    ],
+    "/homework/upload/[courseId]/[batchId]/[week]/[day]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/homework/upload/[courseId]/[batchId]/[week]/[day].js"
     ]
   },
   "ampFirstPages": []

@@ -138,7 +138,7 @@ function Teachers() {
               username={username}
               first_name={first_name}
               last_name={last_name}
-              image_url={image_url}
+              image_url={process.env.NEXT_PUBLIC_IMAGE_DOMAIN + "/" + image_url}
               batches={batches}
               openModal={openModal}
               setSelectedTeacher={setSelectedTeacher}

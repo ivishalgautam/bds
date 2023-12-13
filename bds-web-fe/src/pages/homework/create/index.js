@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useMutation } from "@tanstack/react-query";
 import HomeworkForm from "@/components/Forms/HomeWork";
 import toast from "react-hot-toast";
+import { isObject } from "@/utils/object";
 
 function CreateHomeWorkPage() {
   const router = useRouter();
@@ -19,8 +20,12 @@ function CreateHomeWorkPage() {
       toast.success("Homework created successfully");
       router.push("/homework");
     },
-    onError: () => {
-      toast.error("Failed to create Homework");
+    onError: (err) => {
+      if (isObject(err)) {
+        toast.error(err.message);
+      } else {
+        toast.error("Failed to create Homework");
+      }
       router.push("/homework");
     },
   });

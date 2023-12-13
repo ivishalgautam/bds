@@ -37,7 +37,7 @@ const HomeworkForm = ({ type, handleCreate, productId, handleUpdate }) => {
     try {
       const selectedFile = event.target.files[0];
       if (!selectedFile) {
-        return; // No file selected, so do nothing
+        return toast.error("No file selected!");
       }
 
       const formData = new FormData();
@@ -69,6 +69,8 @@ const HomeworkForm = ({ type, handleCreate, productId, handleUpdate }) => {
         const data = await http().get(
           `${endpoints.homeworks.getAll}/${productId}`
         );
+
+        console.log({ data });
         if (courseOptions) {
           const course = courseOptions.find((c) => c.value === data.course_id);
           setValue("course_id", course);
@@ -234,6 +236,7 @@ const HomeworkForm = ({ type, handleCreate, productId, handleUpdate }) => {
                     />
                     <input
                       placeholder="Heading"
+                      type="text"
                       disabled={type === "view"}
                       className="col-span-2 w-full px-4 py-3 border outline-none rounded-md bg-[#F7F7FC] font-mulish text-xl font-semibold"
                       {...register(`homework.${i}.day_wise.${index}.heading`, {

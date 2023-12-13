@@ -29,8 +29,6 @@ export default function Classes() {
     queryFn: fetchBatches,
   });
 
-  // console.log({ batches });
-
   // const { data: quizs } = useQuery({
   //   queryKey: ["quizs"],
   //   queryFn: fetchQuizs,
@@ -40,13 +38,14 @@ export default function Classes() {
     queryKey: ["homework"],
     queryFn: fetchHomeworks,
   });
+  // console.log({ homeworks });
 
   useEffect(() => {
     setBatches(data);
-    console.log({ batches: data });
+    // console.log({ batches: data });
   }, [data]);
 
-  console.log({ batches: data });
+  // console.log({ batches: data });
 
   const queryClient = useQueryClient();
 

@@ -22,6 +22,7 @@ export const endpoints = {
   },
   homeworks: {
     getAll: "/homeworks",
+    uploadHomework: "/upload-homework",
   },
   franchisee: {
     getAll: "/franchisee",
@@ -71,5 +72,8 @@ export const endpoints = {
   },
   schedules: {
     getAll: "/schedules",
+  },
+  results: {
+    getAll: "/results",
   },
 };

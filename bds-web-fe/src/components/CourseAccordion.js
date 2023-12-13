@@ -2,7 +2,11 @@ import { MainContext } from "@/store/context";
 import Link from "next/link";
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { MdHomeWork, MdOutlineQuiz } from "react-icons/md";
+import {
+  MdHomeWork,
+  MdOutlineDriveFolderUpload,
+  MdOutlineQuiz,
+} from "react-icons/md";
 import { PiFilePptDuotone } from "react-icons/pi";
 
 const CourseAccordion = ({
@@ -13,7 +17,8 @@ const CourseAccordion = ({
   handleWeekComplete,
   type,
 }) => {
-  // console.log({ data });
+  console.log({ data });
+  console.log({ homeworks });
   const { user } = useContext(MainContext);
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -37,7 +42,9 @@ const CourseAccordion = ({
             {type === "class" && getQuiz(item.weeks)?.length > 0 && (
               <Link
                 href={
-                  !getQuiz(item.weeks)[0]?.is_disabled
+                  user?.role !== "student"
+                    ? "#"
+                    : !getQuiz(item.weeks)[0]?.is_disabled
                     ? "#"
                     : `/batches/quiz/${batchId}?w=${item.weeks}`
                 }
@@ -76,29 +83,43 @@ const CourseAccordion = ({
                     <div className="ml-auto mr-10 flex items-center justify-center gap-4">
                       {homeworks !== undefined &&
                         Array.isArray(homeworks) &&
-                        homeworks.length !== 0 && (
+                        homeworks.length !== 0 &&
+                        type === "class" && (
                           <>
-                            {type === "class" && (
-                              <a
-                                href={`${
-                                  process.env.NEXT_PUBLIC_IMAGE_DOMAIN
-                                }/${
-                                  homeworks[0]?.homework[index].day_wise.filter(
+                            <Link
+                              href={`/homework/upload/${homeworks[0].course_id}/${batchId}/${item.weeks}/${day.days}`}
+                              className={`flex items-center justify-center flex-col`}
+                            >
+                              <MdOutlineDriveFolderUpload
+                                size={25}
+                                className="text-primary"
+                              />
+                              <p className="font-semibold text-xs text-center">
+                                Upload <br /> homework
+                              </p>
+                            </Link>
+                            <a
+                              href={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${
+                                homeworks[0]?.homework
+                                  .filter((h) => h.weeks === item.weeks)[0]
+                                  .day_wise.filter(
                                     (homework) => homework.days === day.days
                                   )[0]?.file
-                                }`}
-                                download
-                                className="flex items-center justify-center flex-col"
-                              >
-                                <MdHomeWork
-                                  size={25}
-                                  className="text-primary"
-                                />
-                                <p className="font-semibold text-xs">
-                                  Homework
-                                </p>
-                              </a>
-                            )}
+                              }`}
+                              download
+                              className={`flex items-center justify-center flex-col ${
+                                homeworks[0]?.homework
+                                  .filter((h) => h.weeks === item.weeks)[0]
+                                  .day_wise.filter(
+                                    (homework) => homework.days === day.days
+                                  )[0]?.file
+                                  ? ""
+                                  : "hidden"
+                              }`}
+                            >
+                              <MdHomeWork size={25} className="text-primary" />
+                              <p className="font-semibold text-xs">Homework</p>
+                            </a>
                             <a
                               href={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${
                                 homeworks[0].homework[index].day_wise.filter(
@@ -106,7 +127,13 @@ const CourseAccordion = ({
                                 )[0]?.ppt_file
                               }`}
                               download
-                              className="flex items-center justify-center flex-col"
+                              className={`flex items-center justify-center flex-col ${
+                                !homeworks[0].homework[index].day_wise.filter(
+                                  (homework) => homework.days === day.days
+                                )[0]?.ppt_file
+                                  ? "hidden"
+                                  : ""
+                              }`}
                             >
                               <PiFilePptDuotone
                                 size={25}

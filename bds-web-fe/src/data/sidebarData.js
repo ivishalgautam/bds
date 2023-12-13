@@ -201,10 +201,16 @@ export const AllRoutes = [
     roles: [ROLES.SUB_FRANCHISEE, ROLES.TEACHER],
   },
   {
-    label: "Batches",
+    label: "Quiz",
     link: "/batches/quiz/[id]",
     icon: MdBook,
     roles: [ROLES.STUDENT],
+  },
+  {
+    label: "Result",
+    link: "/results",
+    icon: MdBook,
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
   },
   {
     label: "Homework",
@@ -229,6 +235,12 @@ export const AllRoutes = [
     link: "/homework/[id]",
     icon: MdSpeakerNotes,
     roles: [ROLES.ADMIN],
+  },
+  {
+    label: "Homework",
+    link: "/homework/upload/[courseId]/[batchId]/[week]/[day]",
+    icon: MdSpeakerNotes,
+    roles: [ROLES.STUDENT],
   },
   {
     label: "Projects",

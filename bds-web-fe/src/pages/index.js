@@ -104,7 +104,7 @@ export default function Home() {
     },
   ];
 
-  console.log({ reports });
+  // console.log({ reports });
 
   return (
     <div className="space-y-6">
