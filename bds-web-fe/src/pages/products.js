@@ -13,7 +13,6 @@ import { MdModeEditOutline } from "react-icons/md";
 import { BsFillEyeFill } from "react-icons/bs";
 import toast from "react-hot-toast";
 
-
 const fetchProducts = () => {
   return http().get(endpoints.products.getAll);
 };
@@ -136,7 +135,7 @@ export default function Products() {
             key={product.id}
           >
             <img
-              src={product.thumbnail}
+              src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${product.thumbnail}`}
               alt=""
               className="h-48 w-full object-cover rounded-t-xl"
             />

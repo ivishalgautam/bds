@@ -481,7 +481,7 @@ function MultiStepForm({ type, id, action, title }) {
                 placeholder={
                   type === "master"
                     ? "Master Franchisee Name"
-                    : "Sub Franchisee Name"
+                    : "Franchisee Name"
                 }
                 className="w-full px-4 h-[42px] border outline-none rounded-md bg-[#F7F7FC] font-mulish text-xl font-semibold"
                 {...register("masterFranchiseeName", {

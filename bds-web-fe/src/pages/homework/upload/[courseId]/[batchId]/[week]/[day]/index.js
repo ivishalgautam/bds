@@ -1,17 +1,19 @@
 import { endpoints } from "@/utils/endpoints";
 import http from "@/utils/http";
+import { isObject } from "@/utils/object";
 import useLocalStorage from "@/utils/useLocalStorage";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const postHomework = async (data) => {
   return await http().post(endpoints.homeworks.uploadHomework, data);
 };
 
 export default function UploadHomework() {
-  const [fileName, setFileName] = useState("Click to upload file");
+  const [fileName, setFileName] = useState("Click to upload homework");
   const [file, setFile] = useState(null);
   const router = useRouter();
   const { courseId, batchId, week, day } = router.query;
@@ -45,6 +47,8 @@ export default function UploadHomework() {
         }
       );
 
+      setFile(data.path[0]);
+
       console.log(data);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -55,26 +59,30 @@ export default function UploadHomework() {
     onSuccess: () => {
       toast.success("File uploaded successfully");
     },
-    onError: () => {
-      toast.error("Error file uploading");
+    onError: (err) => {
+      if (isObject(err)) {
+        toast.error(err.message);
+      } else {
+        toast.error("Error file uploading");
+      }
     },
   });
 
-  async function handleSubmit() {
+  async function handleSubmit(e) {
+    e.preventDefault();
     if (!file) {
-      return toast.error("No file selcted!");
+      return toast.error("Please select your homework!");
     }
 
     mutation.mutate({
       course_id: courseId,
-      batchId: batchId,
+      batch_id: batchId,
       week: week,
       day: day,
       file: file,
     });
   }
 
-  // console.log({ courseId, week, day });
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -96,11 +104,6 @@ export default function UploadHomework() {
           </div>
           <div className="flex items-center justify-center">
             <span className="font-normal text-gray-700">{fileName}</span>
-          </div>
-          <div className="flex items-center justify-center">
-            {/* <span className="font-normal text-gray-700">
-              Click to upload file
-            </span> */}
           </div>
           <input
             type="file"

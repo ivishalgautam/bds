@@ -3,8 +3,11 @@ import Spinner from "@/components/Spinner";
 import Title from "@/components/Title";
 import { endpoints } from "@/utils/endpoints";
 import http from "@/utils/http";
+import useLocalStorage from "@/utils/useLocalStorage";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 
 const fetchShops = () => {
   return http().get(endpoints.products.getAll);
@@ -15,6 +18,27 @@ export default function Shop() {
     queryKey: ["shop"],
     queryFn: fetchShops,
   });
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const [token] = useLocalStorage("token");
+
+  const handleEnquiryProduct = async (product_id) => {
+    const resp = await axios.post(
+      `${baseUrl}${endpoints.products.getAll}/enquiry/${product_id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (resp.statusText === "OK") {
+      toast.success(resp.data.message);
+    }
+
+    console.log({ resp });
+  };
 
   if (isLoading)
     return (
@@ -32,9 +56,11 @@ export default function Shop() {
         {data.map((item) => (
           <ShopCard
             key={item.id}
+            id={item.id}
             title={item.title}
             shortDescription={item.short_description}
             thumbnail={item.thumbnail}
+            handleEnquiryProduct={handleEnquiryProduct}
           />
         ))}
       </div>

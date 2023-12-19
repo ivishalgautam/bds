@@ -11,7 +11,7 @@ function CreateMasterFranchisee() {
         title={
           router.pathname.includes("master")
             ? "Create Master Franchisee"
-            : "Create Sub Franchisee"
+            : "Create Franchisee"
         }
       />
     </div>

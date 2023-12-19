@@ -31,7 +31,7 @@ export default function SubFranchisee() {
 
   return (
     <div className="space-y-6">
-      <Title text="All Sub Franchisee" />
+      <Title text="All Franchisee" />
 
       <div className="grid grid-cols-2 gap-6">
         <Link
@@ -40,7 +40,7 @@ export default function SubFranchisee() {
         >
           <div className="flex flex-col items-center justify-center space-y-2">
             <AiOutlinePlus className="text-6xl bg-primary p-2 text-white rounded-full" />
-            <p>Add New Sub Franchisee</p>
+            <p>Add New Franchisee</p>
           </div>
         </Link>
         {data.map((item) => (

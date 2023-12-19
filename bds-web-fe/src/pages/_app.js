@@ -42,9 +42,9 @@ export default function App({ Component, pageProps }) {
 
     // Find the current route in the AllRoutes array
     const currentRoute = AllRoutes.find(
-      (route) =>
-        route.link === router.pathname || route.link.includes(router.pathname)
+      (route) => route.link === router.pathname
     );
+    //  || route.link.includes(router.pathname)
     // If the current route is not found in the array or the user's role is not allowed for this route
     if (!currentRoute || !currentRoute.roles.includes(currentUser?.role)) {
       Router.push("/unauthorized");

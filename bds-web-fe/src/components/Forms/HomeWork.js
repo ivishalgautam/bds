@@ -173,7 +173,7 @@ const HomeworkForm = ({ type, handleCreate, productId, handleUpdate }) => {
               : "Homework Details"
           }
         />
-        <div className="space-y-6 bg-white  rounded-xl">
+        <div className="space-y-6 bg-white rounded-xl">
           <div className="space-y-6">
             <div className="space-y-2">
               {type === "view" && <label htmlFor="courseId">Course</label>}

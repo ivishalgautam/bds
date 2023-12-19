@@ -1,6 +1,8 @@
 import CourseAccordion from "@/components/CourseAccordion";
-import Calender from "@/components/Layout/Calendar";
+import DocViewerApp from "@/components/DocViewerApp";
+import Modal from "@/components/Modal";
 import { endpoints } from "@/utils/endpoints";
+import getFileName from "@/utils/filename";
 import http from "@/utils/http";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -14,38 +16,54 @@ const updateItem = async (updatedItem) => {
   await http().put(`${endpoints.batch.getAll}/${updatedItem.id}`, updatedItem);
 };
 
-// const fetchQuizs = () => {
-//   return http().get(`${endpoints.quiz.getAll}`);
-// };
-
 const fetchHomeworks = () => {
   return http().get(`${endpoints.homeworks.getAll}`);
 };
 
+const fetchUploadedHomeworks = async () => {
+  return await http().get(endpoints.homeworks.myHomeworks);
+};
+
+const fetchProjects = () => {
+  return http().get(`${endpoints.projects.getAll}`);
+};
+
+const fetchUploadedProjects = async () => {
+  return await http().get(endpoints.projects.myProjects);
+};
+
 export default function Classes() {
+  const [openDocViewer, setOpenDocViewer] = useState(false);
+  const [docs, setDocs] = useState([{}]);
   const [batches, setBatches] = useState([]);
   const { isLoading, isError, data } = useQuery({
-    queryKey: ["batches"],
+    queryKey: ["fetchBatches"],
     queryFn: fetchBatches,
   });
 
-  // const { data: quizs } = useQuery({
-  //   queryKey: ["quizs"],
-  //   queryFn: fetchQuizs,
-  // });
-
   const { data: homeworks } = useQuery({
-    queryKey: ["homework"],
+    queryKey: ["fetchHomework"],
     queryFn: fetchHomeworks,
   });
-  // console.log({ homeworks });
+
+  const { data: myHomeworks } = useQuery({
+    queryKey: ["fetchMyHomeworks"],
+    queryFn: fetchUploadedHomeworks,
+  });
+
+  const { data: projects } = useQuery({
+    queryKey: ["fetchProjects"],
+    queryFn: fetchProjects,
+  });
+
+  const { data: myProjects } = useQuery({
+    queryKey: ["fetchMyProjects"],
+    queryFn: fetchUploadedProjects,
+  });
 
   useEffect(() => {
     setBatches(data);
-    // console.log({ batches: data });
   }, [data]);
-
-  // console.log({ batches: data });
 
   const queryClient = useQueryClient();
 
@@ -94,10 +112,21 @@ export default function Classes() {
     );
   }
 
+  const openDoc = (path) => {
+    const docs = [
+      {
+        uri: `${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${path}`,
+        filename: getFileName(path),
+      },
+    ];
+
+    setDocs(docs);
+    setOpenDocViewer(true);
+  };
+
   return (
     <div className="font-mulish">
       <div className="grid gap-6">
-        {/* {JSON.stringify(batches)} */}
         {batches?.map((batch) => {
           return (
             <div className="p-4 bg-white rounded-md space-y-6" key={batch.id}>
@@ -112,13 +141,19 @@ export default function Classes() {
                 homeworks={homeworks?.filter(
                   (homework) => homework.course_id === batch.course_id
                 )}
+                myHomeworks={myHomeworks}
+                projects={projects}
+                myProjects={myProjects}
+                openDoc={openDoc}
                 type="class"
               />
             </div>
           );
         })}
-        {/* <Calender /> */}
       </div>
+      <Modal isOpen={openDocViewer} onClose={() => setOpenDocViewer(false)}>
+        <DocViewerApp docs={docs} />
+      </Modal>
     </div>
   );
 }

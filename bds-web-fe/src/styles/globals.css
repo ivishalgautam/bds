@@ -72,3 +72,6 @@
   height: 1.2em;
   bottom: 0;
 }
+.select-input {
+  @apply p-4 rounded-md bg-primary text-white;
+}

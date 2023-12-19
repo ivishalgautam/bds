@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Logo from "../../assets/logo.svg";
 import { FiSettings } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { LuWallet } from "react-icons/lu";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Avatar from "../../assets/avatar.svg";
@@ -10,6 +11,7 @@ import { useFetchInvites } from "@/hooks/useFetchGroupInvites";
 import http from "@/utils/http";
 import { endpoints } from "@/utils/endpoints";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useFetchRewards } from "@/hooks/useFetchRewards";
 
 const updateNotification = async ({ invitationId, status }) => {
   const data = await http().put(
@@ -64,6 +66,7 @@ function Navbar() {
   };
 
   const { data: invites, isLoading } = useFetchInvites(isNotification);
+  const { data: rewards } = useFetchRewards(user?.role === "student");
 
   const { mutate } = useMutation(updateNotification, {
     onSuccess: (data) => {
@@ -82,6 +85,19 @@ function Navbar() {
     <div className="bg-white shadow-md h-[80px] flex items-center justify-between px-4 border-b">
       <Image src={Logo} alt="logo" width={160} height={40} priority />
       <div className="flex items-center gap-2">
+        {user?.role === "student" && (
+          <div className="rounded-full p-1 bg-yellow-200 text-white flex items-center justify-center cursor-pointer gap-2">
+            <div className="p-2 bg-yellow-500 rounded-full">
+              <LuWallet size={25} className="text-black" />
+            </div>
+            <span className="text-yellow-500 text-2xl font-extrabold">
+              {rewards?.[0].reward_points}
+            </span>
+            <span className="text-black leading-3 text-xs font-semibold mr-2">
+              Reward <br /> points
+            </span>
+          </div>
+        )}
         <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center cursor-pointer">
           <FiSettings className="w-6 h-6" />
         </div>
@@ -148,6 +164,7 @@ function Navbar() {
             </ul>
           )}
         </div>
+
         <div className="relative inline-block">
           {user && (
             <div

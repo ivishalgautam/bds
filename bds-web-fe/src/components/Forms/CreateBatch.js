@@ -90,6 +90,8 @@ function CreateBatch({
         teacher && setValue("teacher_id", teacher);
         setValue("course_id", course);
         setValue("students_ids", getStudents(data.students_id));
+        setValue("start_time", data.start_time);
+        setValue("end_time", data.end_time);
       } catch (error) {
         console.error(error);
       }

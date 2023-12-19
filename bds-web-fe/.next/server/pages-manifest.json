@@ -2,6 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/classes": "pages/classes.js",
-  "/homework/upload/[courseId]/[batchId]/[week]/[day]": "pages/homework/upload/[courseId]/[batchId]/[week]/[day].js"
+  "/": "pages/index.js",
+  "/assign-courses": "pages/assign-courses.js",
+  "/login": "pages/login.js",
+  "/batches": "pages/batches.js"
 }

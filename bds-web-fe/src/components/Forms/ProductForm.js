@@ -57,9 +57,9 @@ const ProductForm = ({
   };
 
   const removeImage = (index) => {
-    const updatedImages = galleryImages.filter((_, i) => i !== index)
+    const updatedImages = galleryImages.filter((_, i) => i !== index);
     setGalleryImages(updatedImages);
-  }
+  };
 
   const handelGalleryImages = async (event) => {
     try {
@@ -293,14 +293,16 @@ const ProductForm = ({
               <div className="w-full rounded-md flex items-center justify-center">
                 {featured ? (
                   <img
-                    src={featured}
+                    src={`${featured}`}
                     alt="upload icon"
                     className="w-full object-contain aspect-video rounded-md"
                   />
                 ) : (
                   <Image
-                    src={UploadImg}
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${UploadImg}`}
                     alt="upload icon"
+                    width={50}
+                    height={50}
                     className="w-full object-contain aspect-video rounded-md"
                   />
                 )}
@@ -384,7 +386,7 @@ const ProductForm = ({
                       >
                         <img
                           key={index}
-                          src={image}
+                          src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${image}`}
                           alt={`Gallery_img_${index + 1}`}
                           className="w-full h-full object-contain"
                         />
@@ -414,9 +416,7 @@ const ProductForm = ({
                 className="absolute inset-0 z-50 w-full h-full opacity-0 cursor-pointer"
               />
               <div className="p-4 text-center">
-                <span>
-                  Upload Gallery Slider Images
-                </span>
+                <span>Upload Gallery Slider Images</span>
               </div>
             </div>
             {/* {errors.documents && (

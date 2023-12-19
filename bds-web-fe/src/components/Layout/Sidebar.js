@@ -19,7 +19,8 @@ export default function Sidebar() {
       !item.link.includes("/upload-recordings") &&
       !item.link.includes("/notes") &&
       !item.link.includes("/todos") &&
-      !item.link.includes("/[courseId]/[batchId]/[week]/[day]")
+      !item.link.includes("/[courseId]/[batchId]/[week]") &&
+      !item.link.includes("/batches/quiz")
   );
 
   // Determine the appropriate sidebar data based on the user's role

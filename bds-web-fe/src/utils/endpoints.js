@@ -19,10 +19,13 @@ export const endpoints = {
   },
   projects: {
     getAll: "/projects",
+    uploadProject: "/projects/upload-project",
+    myProjects: "/projects/my-projects",
   },
   homeworks: {
     getAll: "/homeworks",
-    uploadHomework: "/upload-homework",
+    uploadHomework: "/homeworks/upload-homework",
+    myHomeworks: "/homeworks/my-homeworks",
   },
   franchisee: {
     getAll: "/franchisee",
@@ -75,5 +78,11 @@ export const endpoints = {
   },
   results: {
     getAll: "/results",
+  },
+  levels: {
+    getAll: "/levels",
+  },
+  rewards: {
+    getAll: "/rewards",
   },
 };
