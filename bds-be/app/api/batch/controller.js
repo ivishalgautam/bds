@@ -1,6 +1,7 @@
 "use strict";
 
 import table from "../../db/models.js";
+import sendMail from "../../helpers/mailer.js";
 
 const create = async (req, res) => {
   // console.log(req.body);
@@ -41,7 +42,7 @@ const create = async (req, res) => {
         });
       }
       req.body.teacher_id = teacher?.id;
-      user_ids.push(teacher.user_id);
+      // user_ids.push(teacher.user_id);
     }
 
     for (const student_id of req.body.students_ids) {
@@ -53,7 +54,6 @@ const create = async (req, res) => {
       }
       user_ids.push(student.user_id);
     }
-    // console.log(user_ids);
 
     const course = await table.CourseModel.getById(req);
     if (!course) {
@@ -91,20 +91,44 @@ const create = async (req, res) => {
       quiz
     );
 
-    user_ids.forEach(async (studentId) => {
-      console.log({ studentId });
-      await table.CourseAssignModel.create({
-        body: {
-          course_name: course.course_name,
-          status: "ASSIGNED",
-          course_id: course.id,
-          user_id: studentId,
-        },
-        user_data: { id: req.user_data.id },
-      });
-    });
+    // user_ids.forEach(async (studentId) => {
+    //   await table.CourseAssignModel.create({
+    //     body: {
+    //       course_name: course.course_name,
+    //       status: "ASSIGNED",
+    //       course_id: course.id,
+    //       user_id: studentId,
+    //     },
+    //     user_data: { id: req.user_data.id },
+    //   });
+    // });
 
-    await table.GroupModel.create(req, user_ids);
+    const data = await table.GroupModel.create(req, user_ids);
+
+    if (data) {
+      user_ids.forEach(async (userId) => {
+        await new Promise(async (resolve) => {
+          const user = await table.UserModel.getById(null, userId);
+
+          console.log({ user: user.dataValues });
+          await sendMail(
+            user.dataValues.email,
+            "Course assigned",
+            "",
+            `<html>
+            <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px;">
+              <h1 style="color: #3498db;">Product enquiry</h1>
+              <p style="margin-top: 20px;">
+                YOU ARE ASSIGNED TO A NEW COURSE: ${course.course_name}
+              </p>
+            </body>
+          </html>`
+          );
+
+          resolve();
+        });
+      });
+    }
 
     return res.send({ message: "New batch created" });
   } catch (error) {
@@ -115,8 +139,6 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const batchWeeksComplete = [];
-  console.log(req.body);
-  // console.log(req.body);
   req.body?.course_syllabus?.forEach((cs) => {
     batchWeeksComplete.push({
       weeks: cs.weeks,
@@ -125,10 +147,9 @@ const update = async (req, res) => {
     });
   });
 
-  // console.log(batchWeeksComplete);
-
   try {
     let course;
+    let user_ids = [];
     const record = await table.BatchModel.getById(req);
     if (!record) {
       return res
@@ -147,14 +168,42 @@ const update = async (req, res) => {
     }
 
     if (req.body?.students_ids) {
-      for (const student_id of req.body.students_ids) {
+      for (const student_id of req.body?.students_ids) {
         const student = await table.StudentModel.getById(student_id);
         if (!student) {
           return res.code(404).send({
             message: `student not found. Invalid student id:- ${student_id}`,
           });
         }
+
+        if (!record.students_id.includes(student_id)) {
+          // console.log(student.user_id);
+          // user_ids.push(student.user_id);
+          await new Promise(async (resolve) => {
+            const user = await table.UserModel.getById(null, student.user_id);
+
+            await sendMail(
+              user.email,
+              "Course assigned",
+              "",
+              `<html>
+              <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px;">
+                <h1 style="color: #3498db;">Product enquiry</h1>
+                <p style="margin-top: 20px;">
+                  YOU ARE ASSIGNED TO A NEW COURSE: ${course.course_name}
+                </p>
+              </body>
+            </html>`
+            );
+
+            resolve();
+          });
+        }
       }
+    }
+
+    if (user_ids) {
+      user_ids.forEach(async (userId) => {});
     }
 
     if (req.body?.course_id) {
@@ -248,10 +297,36 @@ const getById = async (req, res) => {
   }
 };
 
+const getBatchStudents = async (req, res) => {
+  let students = [];
+  try {
+    const record = await table.BatchModel.getById(req, req.params.id);
+
+    for (const studentId of record.students_id) {
+      const student = await table.StudentModel.getById(studentId);
+
+      const user = await table.UserModel.getById(null, student.user_id);
+
+      students.push({ student_id: studentId, ...user.dataValues });
+    }
+    res.send(
+      students.map((stu) => ({
+        student_id: stu.student_id,
+        student_name: `${stu.first_name} ${stu.last_name}`,
+        student_image: stu.image_url,
+      }))
+    );
+  } catch (error) {
+    console.log(error);
+    return res.send(error);
+  }
+};
+
 export default {
   create: create,
   update: update,
   deleteById: deleteById,
   get: get,
   getById: getById,
+  getBatchStudents: getBatchStudents,
 };

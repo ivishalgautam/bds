@@ -20,6 +20,10 @@ import ScheduleModel from "./models/schedules.model.js";
 import GroupInvtModel from "./models/group-invite.model.js";
 import ResultModel from "./models/result.model.js";
 import HomeworkUploadModel from "./models/homework-upload.model.js";
+import ProjectUploadModel from "./models/project-upload.model.js";
+import LevelModel from "./models/level.model.js";
+import RewardModel from "./models/reward.model.js";
+import ProductEnquiryModel from "./models/product-enquiry.model.js";
 
 export default {
   UserModel: UserModel,
@@ -44,4 +48,8 @@ export default {
   GroupInvtModel: GroupInvtModel,
   ResultModel: ResultModel,
   HomeworkUploadModel: HomeworkUploadModel,
+  ProjectUploadModel: ProjectUploadModel,
+  LevelModel: LevelModel,
+  RewardModel: RewardModel,
+  ProductEnquiryModel: ProductEnquiryModel,
 };

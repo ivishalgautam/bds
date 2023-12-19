@@ -42,7 +42,6 @@ const verifyUserCredentials = async (req, res) => {
     refresh_token: refreshToken,
     user_data: userData,
   });
-  return;
 };
 
 const createNewUser = async (req, res) => {

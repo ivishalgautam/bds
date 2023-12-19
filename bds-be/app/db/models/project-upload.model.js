@@ -3,11 +3,11 @@
 import sequelizeFwk from "sequelize";
 import constants from "../../lib/constants/index.js";
 
-let HomeworkUploadModel = null;
+let ProjectUploadModel = null;
 
 const init = async (sequelize) => {
-  HomeworkUploadModel = sequelize.define(
-    constants.models.HOMEWROKK_UPLOAD_TABLE,
+  ProjectUploadModel = sequelize.define(
+    constants.models.PROJECT_UPLOAD_TABLE,
     {
       id: {
         allowNull: false,
@@ -59,10 +59,6 @@ const init = async (sequelize) => {
         allowNull: false,
         type: sequelizeFwk.DataTypes.INTEGER,
       },
-      day: {
-        allowNull: false,
-        type: sequelizeFwk.DataTypes.INTEGER,
-      },
       file: {
         allowNull: false,
         type: sequelizeFwk.DataTypes.TEXT,
@@ -74,86 +70,75 @@ const init = async (sequelize) => {
     }
   );
 
-  await HomeworkUploadModel.sync({ alter: true });
+  await ProjectUploadModel.sync({ alter: true });
 };
 
 const create = async (req, student_id, teacher_id) => {
-  return await HomeworkUploadModel.create({
+  return await ProjectUploadModel.create({
     student_id: student_id,
     teacher_id: teacher_id,
     course_id: req.body.course_id,
     batch_id: req.body.batch_id,
     week: req.body.week,
-    day: req.body.day,
     file: req.body.file,
   });
 };
 
-const homeworkExist = async (
+const projectExist = async (
   student_id,
   teacher_id,
   course_id,
   batch_id,
-  week,
-  day
+  week
 ) => {
-  return await HomeworkUploadModel.findOne({
+  return await ProjectUploadModel.findOne({
     where: {
       student_id: student_id,
       teacher_id: teacher_id,
       course_id: course_id,
       batch_id: batch_id,
       week: week,
-      day: day,
     },
   });
 };
 
 const get = async (student_id, teacher_id) => {
-  let whereQuery = `WHERE uh.student_id = '${student_id}'`;
+  let whereQuery = `WHERE pu.student_id = '${student_id}'`;
 
   if (teacher_id) {
-    whereQuery = `WHERE uh.teacher_id = '${teacher_id}'`;
+    whereQuery = `WHERE pu.teacher_id = '${teacher_id}'`;
   }
 
   let query = `
     SELECT 
-        uh.*,
+        pu.*,
         usr.image_url as student_image,
         CONCAT(usr.first_name, ' ', usr.last_name) as student_name,
         btc.batch_name,
         crs.course_name
-      FROM homework_uploads uh
-      LEFT JOIN students std on std.id = uh.student_id
+      FROM project_uploads pu
+      LEFT JOIN students std on std.id = pu.student_id
       LEFT JOIN users usr on usr.id = std.user_id
-      LEFT JOIN courses crs on crs.id = uh.course_id
-      LEFT JOIN batches btc on btc.id = uh.batch_id
+      LEFT JOIN courses crs on crs.id = pu.course_id
+      LEFT JOIN batches btc on btc.id = pu.course_id
       ${whereQuery}
   `;
 
-  return await HomeworkUploadModel.sequelize.query(query, {
+  return await ProjectUploadModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,
   });
 };
 
 const getById = async (id) => {
-  return await HomeworkUploadModel.findOne({
+  return await ProjectUploadModel.findOne({
     where: {
       id: id,
     },
   });
 };
 
-const getByBatchId = async (batch_id) => {
-  return await HomeworkUploadModel.findAll({
-    where: {
-      batch_id: batch_id,
-    },
-  });
-};
-
 const deleteById = async (id) => {
-  return await HomeworkUploadModel.destroy({
+  return await ProjectUploadModel.destroy({
     where: {
       id: id,
     },
@@ -165,7 +150,6 @@ export default {
   create,
   get,
   getById,
-  homeworkExist,
+  projectExist,
   deleteById,
-  getByBatchId,
 };

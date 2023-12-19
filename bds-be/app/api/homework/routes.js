@@ -10,6 +10,9 @@ export default async function routes(fastify, options) {
 
   fastify.put("/:id", {}, controller.update);
   fastify.delete("/:id", {}, controller.deleteById);
+
+  // for student homework upload
   fastify.post("/upload-homework", {}, controller.uploadHomework);
   fastify.get("/my-homeworks", {}, controller.getUploadedHomeworks);
+  fastify.delete("/my-homeworks/:id", {}, controller.deleteUploadedHomework);
 }

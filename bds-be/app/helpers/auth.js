@@ -24,10 +24,16 @@ function generateRefreshToken(userData) {
 
 const verifyToken = async (req, res) => {
   const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    res.code(401).send({ message: "unauthorized!" });
+  }
+
   const token = authHeader.split(" ")[1];
   if (!token) {
-    return res.send("token", "A token is required for authentication");
-    return;
+    return res
+      .code(401)
+      .send({ message: "A token is required for authentication" });
   }
   try {
     const decoded = jwt.verify(token, config.jwt_secret);
@@ -36,7 +42,7 @@ const verifyToken = async (req, res) => {
     req.user_data = userData;
     req.decoded = decoded;
   } catch (error) {
-    return res.send("token", "Invalid token or token expired");
+    return res.code(401).send({ message: "Invalid token or token expired" });
   }
   return;
 };

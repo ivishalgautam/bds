@@ -1,16 +1,20 @@
 "use strict";
 
 import table from "../../db/models.js";
+import sendMail from "../../helpers/mailer.js";
 
 const assignCourse = async (req, res) => {
   try {
     let record = await table.CourseModel.getById(req);
     if (!record) {
-      return res.send(
-        "not_found",
-        "Courses not found. Please enter a valid course id"
-      );
-      return;
+      return res.code(404).send({
+        message: "Courses not found. Please enter a valid course id",
+      });
+    }
+
+    const assignedTo = await table.UserModel.getById(null, req.body.user_id);
+    if (!assignedTo) {
+      return res.code(404).send({ message: "User not exist" });
     }
 
     const assign_course = await table.CourseAssignModel.checkExists(req);
@@ -19,7 +23,6 @@ const assignCourse = async (req, res) => {
         message:
           "This Course already assign to the user. Please assigned different course or user",
       });
-      return;
     }
 
     req.body.course_name = record.course_name;
@@ -30,7 +33,25 @@ const assignCourse = async (req, res) => {
     // if (!franchisee) {
     //   return res.code(404).send({ message: "Franchisee not found!" });
     // }
-    await table.CourseAssignModel.create(req);
+    const data = await table.CourseAssignModel.create(req);
+    console.log({ course_assign: data });
+
+    if (data) {
+      await sendMail(
+        assignedTo.dataValues.email,
+        "Course assigned",
+        "",
+        `<html>
+        <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px;">
+          <h1 style="color: #3498db;">Product enquiry</h1>
+          <p style="margin-top: 20px;">
+            YOU ARE ASSIGNED TO A NEW COURSE: ${data.course_name} 
+          </p>
+        </body>
+      </html>`
+      );
+    }
+
     return res.send({
       message: "New course Assigned.",
     });
