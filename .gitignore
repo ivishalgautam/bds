@@ -1,4 +1,5 @@
 bds-be/node_modules
 bds-be/.env
+bds-be/public
 bds-web-fe/node_modules
 bds-web-fe/.next
