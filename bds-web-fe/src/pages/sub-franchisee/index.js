@@ -21,6 +21,8 @@ export default function SubFranchisee() {
     queryFn: fetchSubFranchisees,
   });
 
+  console.log(data);
+
   if (isLoading)
     return (
       <div className="flex justify-center">

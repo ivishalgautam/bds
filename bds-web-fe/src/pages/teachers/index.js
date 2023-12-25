@@ -44,6 +44,8 @@ function Teachers() {
     queryFn: fetchTeachers,
   });
 
+  console.log({ data });
+
   const queryClient = useQueryClient();
 
   const createMutation = useMutation(createTeacher, {
@@ -117,7 +119,6 @@ function Teachers() {
         </div>
       </Link>
       <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
-        {console.log(data, "teachers data")}
         {data.map(
           ({
             id,
@@ -131,6 +132,8 @@ function Teachers() {
             course_name,
             role,
             course_id,
+            teacher_courses,
+            teacher_total_batches,
           }) => (
             <TeacherCard
               key={id}
@@ -150,6 +153,8 @@ function Teachers() {
               type="sub_franchisee"
               role={role}
               courseId={course_id}
+              teacher_courses={teacher_courses}
+              teacher_total_batches={teacher_total_batches}
             />
           )
         )}

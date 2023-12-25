@@ -3,11 +3,28 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import MileStone from "../assets/milestone.svg";
+import MileStone from "../assets/milestone.png";
 import Image from "next/image";
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
+import { useQuery } from "@tanstack/react-query";
+import http from "@/utils/http";
+import { endpoints } from "@/utils/endpoints";
+import { useFetchRewards } from "@/hooks/useFetchRewards";
 
-export default function MileStones() {
+const fetchLevels = async () => {
+  return await http().get(endpoints.levels.getAll);
+};
+
+export default function MileStones({ user }) {
+  const { data: rewards, isLoading: rewardLoading } = useFetchRewards(
+    user?.role === "student"
+  );
+
+  const { data } = useQuery({
+    queryKey: ["levels"],
+    queryFn: fetchLevels,
+  });
+
   const slides = [
     {
       title: "You Write Your First Code",
@@ -79,13 +96,25 @@ export default function MileStones() {
         spaceBetween={30}
         className="mySwiper"
       >
-        {slides.map((slide, key) => (
+        {data?.map((slide, key) => (
           <SwiperSlide key={key}>
-            <div className="bg-white w-full rounded-3xl">
-              <Image src={slide.image} alt="img" className="aspect-video" />
+            <div
+              style={{ backgroundColor: slide.color }}
+              className={`w-full rounded-3xl ${
+                rewards?.[0].reward_points >= slide.min_reward_point
+                  ? "grayscale-0"
+                  : "grayscale"
+              }`}
+            >
+              <Image src={MileStone} width={"100%"} alt="img" />
               <div className="p-4">
-                <h3>{slide.title}</h3>
-                <p>{slide.description}</p>
+                <h3 className="text-white text-3xl font-extrabold text-center">
+                  Level {slide.level}
+                </h3>
+                <p className="text-center text-white">
+                  You need {slide.min_reward_point - rewards?.[0].reward_points}{" "}
+                  more points to achieve this level
+                </p>
               </div>
             </div>
           </SwiperSlide>

@@ -9,6 +9,7 @@ export default function LevelForm({ id, type, handleCreate, handleUpdate }) {
     register,
     handleSubmit,
     setValue,
+    getValues,
     reset,
     watch,
     formState: { errors },
@@ -18,6 +19,7 @@ export default function LevelForm({ id, type, handleCreate, handleUpdate }) {
     const payload = {
       level: data.level,
       min_reward_point: data.min_reward_point,
+      color: data.color,
     };
 
     if (type === "add") {
@@ -37,6 +39,7 @@ export default function LevelForm({ id, type, handleCreate, handleUpdate }) {
       const data = await http().get(`${endpoints.levels.getAll}/${id}`);
       setValue("level", data.level);
       setValue("min_reward_point", data.min_reward_point);
+      setValue("color", data.color);
     }
 
     if ((type === "edit" && id) || (type === "view" && id)) {
@@ -56,6 +59,7 @@ export default function LevelForm({ id, type, handleCreate, handleUpdate }) {
         }
       />
       <div className="mt-10 grid grid-cols-2 gap-4">
+        {/* level */}
         <div>
           {/* <label htmlFor="level">Level</label> */}
           <input
@@ -71,6 +75,8 @@ export default function LevelForm({ id, type, handleCreate, handleUpdate }) {
             <p className="text-red-600">{errors.level.message}</p>
           )}
         </div>
+
+        {/* reward */}
         <div>
           {/* <label htmlFor="min_reward_point">Reward Points</label> */}
           <input
@@ -82,10 +88,30 @@ export default function LevelForm({ id, type, handleCreate, handleUpdate }) {
               required: "Reward point is required",
             })}
           />
-          {errors.level && (
+          {errors.min_reward_point && (
             <p className="text-red-600">{errors.min_reward_point.message}</p>
           )}
         </div>
+
+        {/* color */}
+        {/* <label htmlFor="min_reward_point">Reward Points</label> */}
+        <div className="flex items-center justify-start w-full bg-[#F7F7FC] border p-2 rounded-md">
+          <input
+            type="color"
+            placeholder="Select color"
+            disabled={type === "view"}
+            className="border outline-none rounded-md bg-[#F7F7FC] font-mulish text-xl font-semibold"
+            {...register("color", {
+              required: "Colour is required",
+            })}
+            onChange={(e) => setValue("color", e.target.value)}
+          />
+          <div className="ml-4">
+            <span>Select color</span>
+            <div>{getValues("color")}</div>
+          </div>
+        </div>
+        {errors.color && <p className="text-red-600">{errors.color.message}</p>}
       </div>
       {type !== "view" && (
         <button

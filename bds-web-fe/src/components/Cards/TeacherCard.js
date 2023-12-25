@@ -10,6 +10,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import { FiMoreVertical } from "react-icons/fi";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { LuWallet } from "react-icons/lu";
 
 function TeacherCard({
   username,
@@ -26,6 +27,11 @@ function TeacherCard({
   type,
   role,
   courseId,
+  student_courses,
+  student_batches,
+  student_reward_points,
+  teacher_courses,
+  teacher_total_batches,
 }) {
   const [show, setShow] = useState(false);
   const router = useRouter();
@@ -102,31 +108,38 @@ function TeacherCard({
       <div className="flex gap-2 mt-2">
         <p className="font-semibold text-base">Batches</p>
         <span> : </span>
-        {batches && type === "sub_franchisee" && (
+        {type === "sub_franchisee" && (
           <p className="text-base">
-            {batches.map((item) => (
-              <span>{item.batches}, </span>
-            ))}{" "}
+            {userRole === "students" ? student_batches : teacher_total_batches}
           </p>
         )}
       </div>
       <div className="flex gap-2">
-        <p className="font-semibold text-base">Course</p>
+        <p className="font-semibold text-base">Courses</p>
         <span> : </span>
-        {course_name && type === "sub_franchisee" && (
+        {type === "sub_franchisee" && (
           <p className="text-base">
-            {course_name}{" "}
-            {courseId && (
-              <Link
-                href={`/courses/details/${courseId}`}
-                className="text-blue-500"
-              >
-                view more...
-              </Link>
-            )}
+            {userRole === "students" ? student_courses : teacher_courses}
           </p>
         )}
       </div>
+      {type === "sub_franchisee" && userRole === "students" && (
+        <div className="flex gap-2">
+          <p className="font-semibold text-base">Reward points</p>
+          <span> : </span>
+          <div className="rounded-full p-1 bg-yellow-200 text-white flex items-center justify-center cursor-pointer gap-2">
+            <div className="p-1 bg-yellow-500 rounded-full">
+              <LuWallet size={15} className="text-black" />
+            </div>
+            <span className="text-yellow-500 text-sm font-extrabold">
+              {student_reward_points}
+            </span>
+            <span className="text-black leading-3 text-[10px] font-semibold mr-2">
+              Reward <br /> points
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

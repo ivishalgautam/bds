@@ -66,7 +66,9 @@ function Navbar() {
   };
 
   const { data: invites, isLoading } = useFetchInvites(isNotification);
-  const { data: rewards } = useFetchRewards(user?.role === "student");
+  const { data: rewards, isLoading: rewardLoading } = useFetchRewards(
+    user?.role === "student"
+  );
 
   const { mutate } = useMutation(updateNotification, {
     onSuccess: (data) => {
@@ -90,9 +92,15 @@ function Navbar() {
             <div className="p-2 bg-yellow-500 rounded-full">
               <LuWallet size={25} className="text-black" />
             </div>
-            <span className="text-yellow-500 text-2xl font-extrabold">
-              {rewards?.[0].reward_points}
-            </span>
+            {rewardLoading ? (
+              <span className="text-yellow-500 text-xs font-extrabold">
+                {rewardLoading ? "loading..." : rewards?.[0].reward_points}
+              </span>
+            ) : (
+              <span className="text-yellow-500 text-2xl font-extrabold">
+                {rewards?.[0].reward_points}
+              </span>
+            )}
             <span className="text-black leading-3 text-xs font-semibold mr-2">
               Reward <br /> points
             </span>

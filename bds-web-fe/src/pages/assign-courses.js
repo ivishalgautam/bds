@@ -13,6 +13,7 @@ import { BsFillEyeFill } from "react-icons/bs";
 import AssignCourseForm from "@/components/Forms/AssignCourses";
 import Modal from "../components/Modal";
 import toast from "react-hot-toast";
+import { isObject } from "@/utils/object";
 
 const fetchAssignCourses = () => {
   return http().get(endpoints.assign_courses);
@@ -80,8 +81,13 @@ export default function Products() {
       queryClient.invalidateQueries({ queryKey: ["assign-courses"] });
       toast.success("Course assigned successfully.");
     },
-    onError: (e) => {
-      toast.error("Failed to assign course");
+    onError: (error) => {
+      console.log({ error });
+      if (isObject(error)) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to assign course");
+      }
     },
   });
 

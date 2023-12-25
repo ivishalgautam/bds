@@ -20,7 +20,8 @@ export default function Sidebar() {
       !item.link.includes("/notes") &&
       !item.link.includes("/todos") &&
       !item.link.includes("/[courseId]/[batchId]/[week]") &&
-      !item.link.includes("/batches/quiz")
+      !item.link.includes("/batches/quiz") &&
+      !item.link.includes("/presentation")
   );
 
   // Determine the appropriate sidebar data based on the user's role

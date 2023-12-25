@@ -2,8 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
-  "/assign-courses": "pages/assign-courses.js",
   "/login": "pages/login.js",
-  "/batches": "pages/batches.js"
+  "/": "pages/index.js",
+  "/levels/create": "pages/levels/create.js"
 }

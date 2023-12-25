@@ -4,7 +4,7 @@ import Title from "@/components/Title";
 import { endpoints } from "@/utils/endpoints";
 import http from "@/utils/http";
 import useLocalStorage from "@/utils/useLocalStorage";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ const fetchShops = () => {
 };
 
 export default function Shop() {
+  const queryClient = useQueryClient();
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["shop"],
     queryFn: fetchShops,
@@ -23,21 +24,25 @@ export default function Shop() {
   const [token] = useLocalStorage("token");
 
   const handleEnquiryProduct = async (product_id) => {
-    const resp = await axios.post(
-      `${baseUrl}${endpoints.products.getAll}/enquiry/${product_id}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const resp = await axios.post(
+        `${baseUrl}${endpoints.products.getAll}/enquiry/${product_id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (resp.statusText === "OK") {
+        toast.success(resp.data.message);
+        queryClient.invalidateQueries("shop");
       }
-    );
-
-    if (resp.statusText === "OK") {
-      toast.success(resp.data.message);
+    } catch (error) {
+      console.log(error);
+      toast.error("Unable to enquire!");
     }
-
-    console.log({ resp });
   };
 
   if (isLoading)
@@ -60,6 +65,7 @@ export default function Shop() {
             title={item.title}
             shortDescription={item.short_description}
             thumbnail={item.thumbnail}
+            is_queried={item.is_queried}
             handleEnquiryProduct={handleEnquiryProduct}
           />
         ))}

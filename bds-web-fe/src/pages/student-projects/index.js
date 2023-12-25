@@ -1,6 +1,7 @@
 import ResultCard from "@/components/Cards/ResultCard";
 import DocViewerApp from "@/components/DocViewerApp";
 import Modal from "@/components/Modal";
+import Spinner from "@/components/Spinner";
 import Title from "@/components/Title";
 import { endpoints } from "@/utils/endpoints";
 import http from "@/utils/http";
@@ -32,7 +33,7 @@ export default function StudentProjects() {
     selectedWeek: null,
   });
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: fetchProjects,
     queryKey: ["fetchStudentsProjects"],
     enabled: !!selected.selectedBatches && !!selected.selectedWeek,
@@ -113,6 +114,7 @@ export default function StudentProjects() {
 
   // console.log({ batches, syllabus, weeks, days });
   // console.log({ projects });
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-3 gap-4">
@@ -158,7 +160,11 @@ export default function StudentProjects() {
 
       <div>
         <Title text={"Completed projects"} />
-        {projects !== null && projects?.length > 0 ? (
+        {!!selected.selectedBatches && !!selected.selectedWeek && isLoading ? (
+          <div className="flex items-center justify-center">
+            <Spinner />
+          </div>
+        ) : projects !== null && projects?.length > 0 ? (
           <div className="grid grid-cols-3 mt-4 gap-4">
             {projects?.map((project) => (
               <ResultCard

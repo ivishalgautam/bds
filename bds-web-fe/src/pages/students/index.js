@@ -35,6 +35,8 @@ function Students() {
     queryFn: fetchStudents,
   });
 
+  // console.log({ data });
+
   const queryClient = useQueryClient();
 
   const createMutation = useMutation(createStudent, {
@@ -117,6 +119,9 @@ function Students() {
             course_name,
             role,
             course_id,
+            student_courses,
+            student_batches,
+            student_reward_points,
           }) => (
             <TeacherCard
               key={id}
@@ -135,6 +140,9 @@ function Students() {
               course_name={course_name}
               role={role}
               courseId={course_id}
+              student_courses={student_courses}
+              student_batches={student_batches}
+              student_reward_points={student_reward_points}
             />
           )
         )}

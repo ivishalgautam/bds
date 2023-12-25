@@ -16,6 +16,7 @@ import { MainContext } from "@/store/context";
 import OngoingCourses from "@/components/OngoingCourses";
 import MileStones from "@/components/MileStones";
 import toast from "react-hot-toast";
+import ProfileCard from "@/components/Cards/Profile";
 
 const getReport = () => {
   return http().get(endpoints.dashboard.getAll);
@@ -108,7 +109,16 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      {user?.role === "student" && <MileStones />}
+      {user?.role === "student" && (
+        <div className="grid grid-cols-9 gap-4">
+          <div className="bg-[#e6ffff] col-span-3 rounded-xl shadow-lg">
+            <ProfileCard user={user} />
+          </div>
+          <div className="col-span-6 bg-white rounded-xl py-4">
+            <MileStones user={user} />
+          </div>
+        </div>
+      )}
       {user?.role !== "student" && (
         <>
           <Stats data={reports} />

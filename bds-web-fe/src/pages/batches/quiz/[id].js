@@ -52,7 +52,7 @@ const Quiz = () => {
   const { mutate } = useMutation(postResult, {
     onSuccess: () => {
       toast.success("Quiz submitted.");
-      queryClient.invalidateQueries("fetchResults");
+      queryClient.invalidateQueries(["fetchResults", "rewards"]);
     },
     onError: (err) => {
       toast.error("Error while submitting");

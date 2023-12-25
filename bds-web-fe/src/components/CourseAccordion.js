@@ -44,7 +44,7 @@ const CourseAccordion = ({
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  console.log({ projects, myProjects });
+  // console.log({ projects, myProjects });
 
   function getQuiz(weeks) {
     return quizs?.filter((quiz) => quiz.weeks === weeks);
@@ -288,7 +288,7 @@ const CourseAccordion = ({
                                 </p>
                               </Link>
                             )}
-                            {user.role === "teacher" ? (
+                            {user?.role === "teacher" ? (
                               <div
                                 onClick={() =>
                                   openDoc(
@@ -337,11 +337,10 @@ const CourseAccordion = ({
                                 </div>
                               )
                             )}
-                            <div
-                              onClick={() =>
-                                openDoc(isPpt(index, day.days)?.[0]?.ppt_file)
-                              }
-                              target="_blank"
+                            <Link
+                              href={`/presentation?pptUrl=${
+                                isPpt(index, day.days)?.[0]?.ppt_file
+                              }`}
                               className={`flex items-center justify-center flex-col cursor-pointer ${
                                 !isPpt(index, day.days)?.[0]?.ppt_file
                                   ? "hidden"
@@ -353,7 +352,7 @@ const CourseAccordion = ({
                                 className="text-primary"
                               />
                               <p className="font-semibold text-xs">PPT</p>
-                            </div>
+                            </Link>
                           </>
                         )}
                       {user?.role === "teacher" && (

@@ -1,3 +1,4 @@
+import Spinner from "@/components/Spinner";
 import { endpoints } from "@/utils/endpoints";
 import http from "@/utils/http";
 import { useQuery } from "@tanstack/react-query";
@@ -9,11 +10,18 @@ const fetchResults = async () => {
 };
 
 const Result = () => {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["fetchResults"],
     queryFn: fetchResults,
   });
-  console.log({ data });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-3 gap-4">

@@ -165,6 +165,18 @@ export const AllRoutes = [
     roles: [ROLES.STUDENT, ROLES.TEACHER],
   },
   {
+    label: "Classes",
+    link: "/classes/[id]",
+    icon: MdBook,
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
+  },
+  {
+    label: "Presentation",
+    link: "/presentation",
+    icon: MdBook,
+    roles: [ROLES.STUDENT, ROLES.TEACHER],
+  },
+  {
     label: "Schedules",
     link: "/schedules",
     icon: MdBook,
@@ -396,5 +408,11 @@ export const AllRoutes = [
     link: "/buddy-team/[id]",
     icon: BsShopWindow,
     roles: [ROLES.STUDENT, ROLES.TEACHER],
+  },
+  {
+    label: "Course enquiries",
+    link: "/course-enquiries",
+    icon: BsShopWindow,
+    roles: [ROLES.ADMIN, ROLES.SUB_FRANCHISEE, ROLES.MASTER_FRANCHISEE],
   },
 ];

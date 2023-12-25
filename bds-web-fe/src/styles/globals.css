@@ -6,6 +6,9 @@
   background: linear-gradient(90.22deg, #f7f7fc 50%, #5541d7 50%);
 }
 
+.mySwiper {
+  width: 100%;
+}
 .mySwiper .swiper-slide:nth-child(odd) {
   margin-top: 80px;
 }
@@ -74,4 +77,8 @@
 }
 .select-input {
   @apply p-4 rounded-md bg-primary text-white;
+}
+
+#pdf-download {
+  display: none;
 }

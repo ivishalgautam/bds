@@ -8,6 +8,7 @@ export default function ShopCard({
   shortDescription,
   thumbnail,
   handleEnquiryProduct,
+  is_queried,
 }) {
   return (
     <div className="bg-white rounded-xl overflow-hidden">
@@ -21,13 +22,19 @@ export default function ShopCard({
         </div>
         <p className="text-base">{shortDescription}</p>
         <div className="flex justify-between">
-          <button
-            className="bg-primary py-2 px-6 text-white rounded-md"
-            onClick={() => handleEnquiryProduct(id)}
-          >
-            Buy Now
-          </button>
-          <button className="text-primary font-bold">View Product</button>
+          {!is_queried ? (
+            <button
+              className="bg-primary py-2 px-6 text-white rounded-md"
+              onClick={() => handleEnquiryProduct(id)}
+            >
+              Buy Now
+            </button>
+          ) : (
+            <button className="bg-primary py-2 px-6 text-white rounded-md">
+              Queried
+            </button>
+          )}
+          {/* <button className="text-primary font-bold">View Product</button> */}
         </div>
       </div>
     </div>

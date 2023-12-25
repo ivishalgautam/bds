@@ -18,6 +18,8 @@ export default function MasterFranchisee() {
     queryFn: fetchFranchisees,
   });
 
+  console.log({ data });
+
   if (isLoading)
     return (
       <div className="flex justify-center">
@@ -45,7 +47,7 @@ export default function MasterFranchisee() {
             key={item.id}
             title={item.franchisee_name}
             subFranchisies={item.total_subfranchisee}
-            totalStudents={item.total_student}
+            totalStudents={item.total_students}
             id={item.id}
           />
         ))}
