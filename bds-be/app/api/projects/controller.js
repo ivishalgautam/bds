@@ -10,15 +10,14 @@ const create = async (req, res) => {
   try {
     const record = await table.CourseModel.getById(req);
     if (!record) {
-      return res.send(
-        "not_found",
-        "Course not found. Please a enter a valid course id"
-      );
-      return;
+      return res.code(404).send({
+        message: "Course not found. Please a enter a valid course id",
+      });
     }
     if (parseInt(record.duration) < req.body.weeks) {
-      return res.send("bad_request", "weeks not greater than course duration");
-      return;
+      return res
+        .code(400)
+        .send({ message: "weeks not greater than course duration" });
     }
 
     const project = await table.ProjectModel.checkExist(req);
@@ -43,14 +42,16 @@ const update = async (req, res) => {
   try {
     const record = await table.ProjectModel.getById(req);
     if (!record) {
-      return res.send("not_found", "Project not found or project is deleted");
-      return;
+      return res
+        .code(404)
+        .send({ message: "Project not found or project is deleted" });
     }
     if (req.body?.course_id) {
       const course = await table.CourseModel.getById(req);
       if (!course) {
-        return res.send("not_found", "Course not found or course is deleted");
-        return;
+        return res
+          .code(404)
+          .send({ message: "Course not found or course is deleted" });
       }
     }
     return res.send(await table.ProjectModel.update(req));
@@ -64,11 +65,9 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.ProjectModel.deleteById(req);
     if (record === 0) {
-      return res.send(
-        "not_found",
-        "Project already deleted or not exists in our database"
-      );
-      return;
+      return res.code(404).send({
+        message: "Project already deleted or not exists in our database",
+      });
     }
     return res.send({
       message: "Project deleted.",
@@ -92,8 +91,7 @@ const getById = async (req, res) => {
   try {
     const record = await table.ProjectModel.getById(req);
     if (!record) {
-      return res.send("not_found", "Project not found");
-      return;
+      return res.code(404).send({ message: "Project not found" });
     }
     return res.send(record);
   } catch (error) {

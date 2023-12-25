@@ -57,8 +57,7 @@ const getFile = async (req, res) => {
     );
   }
   if (!fs.existsSync(req.query.file_path)) {
-    return res.send("not_found", "file not found");
-    return;
+    return res.code(404).send({ message: "file not found" });
   }
   let mime = req.query.file_path.split(".").pop();
   if (["jpeg", "jpg", "png", "gif", "webp"].includes(mime)) {

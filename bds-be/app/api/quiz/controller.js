@@ -6,11 +6,9 @@ const create = async (req, res) => {
   try {
     const record = await table.CourseModel.getById(req);
     if (!record) {
-      return res.send(
-        "not_found",
-        "Course not found. Please enter a valid course name"
-      );
-      return;
+      return res.code(404).send({
+        message: "Course not found. Please enter a valid course name",
+      });
     }
 
     const quizExist = await table.QuizModel.getByWeekAndCourseId(
@@ -39,17 +37,14 @@ const update = async (req, res) => {
   try {
     record = await table.QuizModel.getById(req);
     if (!record) {
-      return res.send("not_found", "quiz not found or deleted");
-      return;
+      return res.code(404).send({ message: "quiz not found or deleted" });
     }
     if (req.body?.course_id) {
       record = await table.CourseModel.getById(req);
       if (!record) {
-        return res.send(
-          "not_found",
-          "Course not found. Please enter a valid course name"
-        );
-        return;
+        return res.code(404).send({
+          message: "Course not found. Please enter a valid course name",
+        });
       }
     }
     return res.send(await table.QuizModel.update(req));
@@ -63,7 +58,7 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.QuizModel.deleteById(req);
     if (record === 0) {
-      return res.send("not_found", "quiz not found or deleted");
+      return res.code(404).send({ message: "quiz not found or deleted" });
     }
     return res.send({
       message: "Quiz deleted.",
@@ -87,8 +82,7 @@ const getById = async (req, res) => {
   try {
     const record = await table.QuizModel.getById(req);
     if (!record) {
-      return res.send("not_found", "quiz not found or deleted");
-      return;
+      return res.code(404).send({ message: "quiz not found or deleted" });
     }
     return res.send(record);
   } catch (error) {

@@ -4,6 +4,17 @@ import table from "../../db/models.js";
 const create = async (req, res) => {
   try {
     const result = await table.ResultModel.create(req);
+
+    if (result) {
+      const student = await table.StudentModel.getByUserId(req.user_data.id);
+      const rewardRecord = await table.RewardModel.getByStudentId(student.id);
+      req.body.reward_points = req.body.your_points;
+      await table.RewardModel.updateByStudentId(
+        rewardRecord.reward_points + parseInt(req.body.your_points),
+        student.id
+      );
+    }
+
     res.send(result);
   } catch (error) {
     console.error(error);

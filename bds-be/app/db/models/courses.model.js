@@ -121,6 +121,16 @@ const get = async (req) => {
   });
 };
 
+const getAllCourses = async () => {
+  const query = `
+        SELECT * FROM courses;
+  `;
+
+  return await CourseModel.sequelize.query(query, {
+    type: sequelizeFwk.QueryTypes.SELECT,
+  });
+};
+
 const getById = async (req) => {
   return await CourseModel.findOne({
     where: {
@@ -162,4 +172,5 @@ export default {
   getById,
   deleteById,
   countCourse,
+  getAllCourses,
 };

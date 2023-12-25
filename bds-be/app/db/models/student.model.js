@@ -64,6 +64,7 @@ const create = async (user_id, franchisee_id, sub_franchisee_id) => {
 };
 
 const get = async (sub_franchisee_id) => {
+  // console.log({ sub_franchisee_id });
   let query = `
         SELECT
             st.id,
@@ -76,14 +77,33 @@ const get = async (sub_franchisee_id) => {
             usr.image_url,
             usr.email,
             CASE WHEN crs.course_name IS NULL THEN NULL ELSE crs.course_name END as course_name,
-            CASE WHEN crs.id IS NULL THEN NULL ELSE crs.id END as course_id
+            CASE WHEN crs.id IS NULL THEN NULL ELSE crs.id END as course_id,
+            COUNT(uscr.*) as student_courses,
+            COUNT(btch.*) as student_batches,
+            rwrd.reward_points as student_reward_points
         FROM 
             students st
         INNER JOIN users usr ON usr.id = st.user_id
         LEFT JOIN users_courses uscr ON uscr.user_id = st.user_id
         LEFT JOIN courses crs ON crs.id = uscr.course_id
+        LEFT JOIN batches btch ON st.id = ANY(SELECT jsonb_array_elements_text(btch.students_id)::uuid)
+        LEFT JOIN rewards rwrd ON rwrd.student_id = st.id
         WHERE
-            sub_franchisee_id = '${sub_franchisee_id}';
+            st.sub_franchisee_id = '${sub_franchisee_id}'
+        GROUP BY
+            st.id,
+            st.user_id,
+            usr.username,
+            usr.first_name,
+            usr.last_name,
+            usr.role,
+            usr.profession,
+            usr.image_url,
+            usr.email,
+            crs.course_name,
+            crs.id,
+            rwrd.reward_points
+        ;
     `;
   return await StudentModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,

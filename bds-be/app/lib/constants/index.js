@@ -69,7 +69,8 @@ const constants = {
     PROJECT_UPLOAD_TABLE: "project_uploads",
     LEVEL_TABLE: "levels",
     REWARD_TABLE: "rewards",
-    PRODUCT_ENQUIRY_TABLE: "product_enquiriesons",
+    PRODUCT_ENQUIRY_TABLE: "product_enquiries",
+    COURSE_ENQUIRY_TABLE: "course_enquiries",
   },
   bcrypt: {
     SALT_ROUNDS: 10,

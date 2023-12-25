@@ -10,4 +10,11 @@ export default async function routes(fastify, options) {
 
   fastify.put("/:id", {}, controller.update);
   fastify.delete("/:id", {}, controller.deleteById);
+
+  // for course enquiry
+  fastify.post("/enquiry", {}, controller.createEnquiry);
+  fastify.get("/enquiry", {}, controller.getEnquiries);
+
+  // upcoming courses
+  fastify.get("/find/unassigned-course", {}, controller.getUnassignedCourses);
 }

@@ -24,6 +24,7 @@ import ProjectUploadModel from "./models/project-upload.model.js";
 import LevelModel from "./models/level.model.js";
 import RewardModel from "./models/reward.model.js";
 import ProductEnquiryModel from "./models/product-enquiry.model.js";
+import CourseEnquiryModel from "./models/course-enquiry.model.js";
 
 export default {
   UserModel: UserModel,
@@ -52,4 +53,5 @@ export default {
   LevelModel: LevelModel,
   RewardModel: RewardModel,
   ProductEnquiryModel: ProductEnquiryModel,
+  CourseEnquiryModel: CourseEnquiryModel,
 };

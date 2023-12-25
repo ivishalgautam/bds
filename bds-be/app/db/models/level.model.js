@@ -23,6 +23,10 @@ const init = async (sequelize) => {
         allowNull: false,
         type: sequelizeFwk.DataTypes.INTEGER,
       },
+      color: {
+        allowNull: false,
+        type: sequelizeFwk.DataTypes.STRING,
+      },
     },
     {
       createdAt: "created_at",
@@ -37,6 +41,7 @@ const create = async (req) => {
   return await LevelModel.create({
     level: req.body.level,
     min_reward_point: req.body.min_reward_point,
+    color: req.body.color,
   });
 };
 
@@ -45,6 +50,7 @@ const update = async (req) => {
     {
       level: req.body.level,
       min_reward_point: req.body.min_reward_point,
+      color: req.body.color,
     },
     {
       where: {
@@ -57,7 +63,9 @@ const update = async (req) => {
 };
 
 const get = async () => {
-  return await LevelModel.findAll();
+  return await LevelModel.findAll({
+    order: [["level", "ASC"]],
+  });
 };
 
 const getById = async (id) => {

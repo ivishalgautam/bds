@@ -37,6 +37,8 @@ const getLast30Days = async (req, res) => {
 
 const get = async (req, res) => {
   try {
+    let sub_user_id = null;
+    let master_user_id = null;
     let reports = {};
     let last30DaysReports = {};
     if (req.user_data.role === "admin") {
@@ -100,6 +102,13 @@ const get = async (req, res) => {
       );
       last30DaysReports.total_course =
         await table.CourseAssignModel.countCourse(franchisee.user_id, true);
+
+      const master = await table.FranchiseeModel.getById(
+        null,
+        sub.dataValues.franchisee_id
+      );
+
+      master_user_id = master.user_id;
     }
 
     if (req.user_data.role === "teacher") {
@@ -114,13 +123,39 @@ const get = async (req, res) => {
       );
       last30DaysReports.total_course =
         await table.CourseAssignModel.countCourse(teacher.user_id, true);
+
+      const sub = await table.FranchiseeModel.getById(
+        null,
+        teacher.dataValues.sub_franchisee_id
+      );
+
+      sub_user_id = sub.user_id;
+    }
+
+    if (req.user_data.role === "student") {
+      const student = await table.StudentModel.getByUserId(req.user_data.id);
+
+      if (!student) {
+        return res.code(404).send({ message: "student not exist!" });
+      }
+
+      const sub = await table.FranchiseeModel.getById(
+        null,
+        student.dataValues.sub_franchisee_id
+      );
+
+      sub_user_id = sub.user_id;
     }
 
     return res.send({
       reports: reports,
       last_30_days_reports: last30DaysReports,
       tickets: await table.TicketModel.getAll(req),
-      announcements: await table.AnnouncementModel.getAll(req),
+      announcements: await table.AnnouncementModel.getAll(
+        req,
+        sub_user_id,
+        master_user_id
+      ),
     });
   } catch (error) {
     console.log(error);

@@ -95,11 +95,22 @@ const get = async () => {
             frs.document_url,
             frs.gst_number,
             frs.franchisee_id,
-            frs.user_id
+            frs.user_id,
+            COUNT(fr.*) as total_subfranchisee,
+            COUNT(st.*) as total_students
         FROM
             franchisees frs
+            LEFT JOIN franchisees fr on fr.franchisee_id = frs.id
+            LEFT JOIN students st on st.franchisee_id = frs.id
         WHERE 
             frs.franchisee_id is null
+        GROUP BY 
+            frs.id,
+            frs.franchisee_name,
+            frs.document_url,
+            frs.gst_number,
+            frs.franchisee_id,
+            frs.user_id
     `;
   return await FranchiseeModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,
@@ -108,7 +119,7 @@ const get = async () => {
 
 const getById = async (req, fran_id) => {
   // console.log(req.params, fran_id);
-  console.log({ fran_id });
+  // console.log({ fran_id });
   return await FranchiseeModel.findOne({
     where: {
       id: req?.params?.id || fran_id,
@@ -138,7 +149,7 @@ const getSubFranchisee = async (req) => {
 const getAllSubFranchisee = async (req) => {
   let whereQuery;
   if (req.user_data.role === "admin") {
-    whereQuery = "franchisee_id is not null";
+    whereQuery = "sbfrs.franchisee_id is not null";
   } else {
     const record = await FranchiseeModel.findOne({
       where: {
@@ -148,7 +159,7 @@ const getAllSubFranchisee = async (req) => {
         },
       },
     });
-    whereQuery = `franchisee_id = '${record.id}'`;
+    whereQuery = `sbfrs.franchisee_id = '${record.id}'`;
   }
 
   let query = `
@@ -158,12 +169,23 @@ const getAllSubFranchisee = async (req) => {
             sbfrs.document_url,
             sbfrs.gst_number,
             sbfrs.franchisee_id,
-            sbfrs.user_id
+            sbfrs.user_id,
+            COUNT(st.*) as total_students,
+            COUNT(uc.*) as total_courses
         FROM   
             franchisees sbfrs
+        LEFT JOIN students st on st.sub_franchisee_id = sbfrs.id
+        LEFT JOIN users usr on usr.id = sbfrs.user_id
+        LEFT JOIN users_courses uc on uc.user_id = usr.id
         WHERE
             ${whereQuery}
-    
+        GROUP BY 
+            sbfrs.id,
+            sbfrs.franchisee_name,
+            sbfrs.document_url,
+            sbfrs.gst_number,
+            sbfrs.franchisee_id,
+            sbfrs.user_id
     `;
   return await FranchiseeModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,

@@ -65,7 +65,7 @@ const init = async (sequelize) => {
 };
 
 const create = async (req) => {
-  console.log({ req });
+  // console.log({ req });
   return await UserCourseModel.create({
     course_name: req.body.course_name,
     status: req.body.status,
@@ -91,13 +91,13 @@ const update = async (req) => {
 };
 
 const get = async (user_id, isAdmin = false) => {
-  let whereQuery;
+  let whereQuery = "";
   if (isAdmin) {
     whereQuery = "";
   } else {
     whereQuery = `WHERE usrcrs.assigned_by_id = '${user_id}'`;
   }
-  console.log({ user_id });
+  // console.log({ user_id });
   let query = `
         SELECT
             usrcrs.id,
@@ -133,19 +133,26 @@ const deleteById = async (req) => {
 };
 
 const getAllCourseByFranchiseeId = async (user_id) => {
-  query = `
-        SELECT 
-            usc.course_name,
-            usc.status,
-            usc.franchisee_id,
-            frm.franchisee_id,
-            usc.status,
-            frn.franchisee_name
-        FROM users_courses usc
-        WHERE user_id = ${user_id}
-        INNER JOIN ON franchisees frn frn.user_id = usc.user_id
-        GROUP BY frn.franchisee_id
-    `;
+  const query = `
+          SELECT
+              *
+          FROM users_courses
+          WHERE user_id = '${user_id}' AND status = 'ASSIGNED'
+  `;
+
+  // let query = `
+  //       SELECT
+  //           usc.course_name,
+  //           usc.status,
+  //           usc.user_id,
+  //           frn.franchisee_id,
+  //           usc.status,
+  //           frn.franchisee_name
+  //       FROM users_courses usc
+  //       INNER JOIN franchisees frn ON frn.user_id = usc.user_id
+  //       WHERE usc.user_id = '${user_id}'
+  //       GROUP BY frn.franchisee_id
+  //       `;
   return await UserCourseModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,
   });

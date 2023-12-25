@@ -146,11 +146,13 @@ const get = async (teacher_id, sub_franchisee_id, student_id) => {
             bt.franchisee_id,
             bt.sub_franchisee_id,
             bt.course_syllabus,
-            bt.quiz
+            bt.quiz,
+            crs.course_thumbnail
         FROM
             batches bt
         INNER JOIN teachers tc ON tc.id = bt.teacher_id
         INNER JOIN users usr ON usr.id = tc.user_id
+        INNER JOIN courses crs ON crs.id = bt.course_id
         ${wherQuery}
     `;
   return await BatchModel.sequelize.query(query, {

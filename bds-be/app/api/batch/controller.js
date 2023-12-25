@@ -42,7 +42,6 @@ const create = async (req, res) => {
         });
       }
       req.body.teacher_id = teacher?.id;
-      // user_ids.push(teacher.user_id);
     }
 
     for (const student_id of req.body.students_ids) {
@@ -80,8 +79,6 @@ const create = async (req, res) => {
       });
     }
 
-    // return console.log(syllabus.map((s) => s.day_wise));
-
     await table.BatchModel.create(
       req,
       record?.franchisee_id || teacher.franchisee_id,
@@ -110,7 +107,6 @@ const create = async (req, res) => {
         await new Promise(async (resolve) => {
           const user = await table.UserModel.getById(null, userId);
 
-          console.log({ user: user.dataValues });
           await sendMail(
             user.dataValues.email,
             "Course assigned",
@@ -188,7 +184,7 @@ const update = async (req, res) => {
               "",
               `<html>
               <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px;">
-                <h1 style="color: #3498db;">Product enquiry</h1>
+                <h1 style="color: #3498db;">Course assigned</h1>
                 <p style="margin-top: 20px;">
                   YOU ARE ASSIGNED TO A NEW COURSE: ${course.course_name}
                 </p>
@@ -236,8 +232,9 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.BatchModel.deleteById(req);
     if (record === 0) {
-      return res.send("not_found", "batch not exists in our database");
-      return;
+      return res
+        .code(404)
+        .send({ message: "batch not exists in our database" });
     }
     return res.send({
       message: "batch deleted.",
@@ -257,10 +254,12 @@ const get = async (req, res) => {
     if (req.user_data.role === "sub_franchisee") {
       franchisee = await table.FranchiseeModel.getByUserId(req);
       if (!franchisee) {
-        return res.send(
-          "not_found",
-          "master franchisee not exists. Please contact us our support team"
-        );
+        return res
+          .code(404)
+          .send({
+            message:
+              "master franchisee not exists. Please contact us our support team",
+          });
       }
     }
 

@@ -22,11 +22,9 @@ const create = async (req, res) => {
     );
 
     if (record) {
-      return res
-        .code(409)
-        .send({
-          message: `Min reward point exist: '${req.body.min_reward_point}'`,
-        });
+      return res.code(409).send({
+        message: `Min reward point exist: '${req.body.min_reward_point}'`,
+      });
     }
 
     await table.LevelModel.create(req);
@@ -85,10 +83,7 @@ const deleteById = async (req, res) => {
 
 const get = async (req, res) => {
   try {
-    if (req.user_data.role !== "admin") {
-      res.code(401).send({ message: "Unauthorized!" });
-    }
-
+    // return res.send("hello");
     res.send(await table.LevelModel.get());
   } catch (error) {
     console.error(error);

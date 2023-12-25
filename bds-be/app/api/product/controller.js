@@ -19,7 +19,9 @@ const update = async (req, res) => {
   try {
     const record = await table.ProductModel.getById(req);
     if (!record) {
-      return res.send("not_found", "product not found or product is deleted");
+      return res
+        .code(404)
+        .send({ message: "product not found or product is deleted" });
     }
     return res.send(await table.ProductModel.update(req));
   } catch (error) {
@@ -32,7 +34,9 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.ProductModel.deleteById(req);
     if (record === 0) {
-      return res.send("not_found", "product not found or product is deleted");
+      return res
+        .code(404)
+        .send({ message: "product not found or product is deleted" });
     }
     return res.send({
       message: "Product deleted.",
@@ -44,8 +48,25 @@ const deleteById = async (req, res) => {
 };
 
 const get = async (req, res) => {
+  let products = [];
   try {
-    return res.send(await table.ProductModel.get());
+    const record = await table.ProductModel.get();
+
+    for (const product of record) {
+      let is_queried = false;
+      const exist = await table.ProductEnquiryModel.exist(
+        req.user_data.id,
+        product.id
+      );
+
+      if (exist) {
+        is_queried = true;
+      }
+
+      products.push(Object.assign(product.dataValues, { is_queried }));
+    }
+
+    return res.send(products);
   } catch (error) {
     console.log(error);
     return res.send(error);
@@ -56,7 +77,9 @@ const getById = async (req, res) => {
   try {
     const record = await table.ProductModel.getById(req);
     if (!record) {
-      return res.send("not_found", "product not found or product is deleted");
+      return res
+        .code(404)
+        .send({ message: "product not found or product is deleted" });
     }
 
     return res.send(record);
@@ -67,7 +90,6 @@ const getById = async (req, res) => {
 };
 
 const createEnquiry = async (req, res) => {
-  console.log("object");
   try {
     const user = await table.UserModel.getById(null, req.user_data.id);
     const product = await table.ProductModel.getById(
@@ -91,11 +113,13 @@ const createEnquiry = async (req, res) => {
     );
 
     if (data) {
+      res.send({ message: "Enquiry raised successfully" });
+
       await sendMail(
         process.env.SMTP_EMAIL,
         "Product enquiry",
         `User ${user.dataValues.first_name} ${user.dataValues.last_name} enquire for product ${product.dataValues.title}`,
-        `html>
+        `<html>
         <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px;">
           <h1 style="color: #3498db;">Product enquiry</h1>
           <p style="margin-top: 20px;">
@@ -107,8 +131,6 @@ const createEnquiry = async (req, res) => {
       </html>`
       );
     }
-
-    res.send({ message: "Enquiry raised successfully" });
   } catch (error) {
     console.error(error);
     return res.send(error);

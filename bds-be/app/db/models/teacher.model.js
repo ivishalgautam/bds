@@ -63,25 +63,39 @@ const create = async (user_id, franchisee_id, sub_franchisee_id) => {
 
 const get = async (sub_franchisee_id) => {
   let query = `
-        SELECT
-            tch.id,
-            tch.user_id,
-            usr.username,
-            usr.first_name,
-            usr.last_name,
-            usr.role,
-            usr.profession,
-            usr.image_url,
-            CASE WHEN crs.course_name IS NULL THEN NULL ELSE crs.course_name END as course_name,
-            CASE WHEN crs.id IS NULL THEN NULL ELSE crs.id END as course_id
-        FROM 
-            teachers tch
-        INNER JOIN users usr ON usr.id = tch.user_id
-        LEFT JOIN users_courses uscr ON uscr.user_id = tch.user_id
-        LEFT JOIN courses crs ON crs.id = uscr.course_id
-        WHERE
-            tch.sub_franchisee_id = '${sub_franchisee_id}'
-    `;
+                SELECT
+                    tch.id,
+                    tch.user_id,
+                    usr.username,
+                    usr.first_name,
+                    usr.last_name,
+                    usr.role,
+                    usr.profession,
+                    usr.image_url,
+                    CASE WHEN crs.course_name IS NULL THEN NULL ELSE crs.course_name END as course_name,
+                    CASE WHEN crs.id IS NULL THEN NULL ELSE crs.id END as course_id,
+                    COUNT(crs.*) AS teacher_courses,
+                    COUNT(btch.*) AS teacher_total_batches
+                FROM 
+                    teachers tch
+                INNER JOIN users usr ON usr.id = tch.user_id
+                LEFT JOIN users_courses uscr ON uscr.user_id = tch.user_id
+                LEFT JOIN courses crs ON crs.id = uscr.course_id
+                LEFT JOIN batches btch ON btch.teacher_id = tch.id
+                WHERE
+                    tch.sub_franchisee_id = '${sub_franchisee_id}'
+                GROUP BY
+                    tch.id,
+                    tch.user_id,
+                    usr.username,
+                    usr.first_name,
+                    usr.last_name,
+                    usr.role,
+                    usr.profession,
+                    usr.image_url,
+                    crs.course_name,
+                    crs.id
+              `;
   return await TeacherModel.sequelize.query(query, {
     type: sequelizeFwk.QueryTypes.SELECT,
   });

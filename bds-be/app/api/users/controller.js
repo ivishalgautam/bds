@@ -46,8 +46,7 @@ const update = async (req, res) => {
   try {
     const record = await table.UserModel.getById(req);
     if (!record) {
-      return res.send("user_not_found", "User not exists");
-      return;
+      return res.code(404).send({ message: "User not exists" });
     }
     return res.send(await table.UserModel.update(req));
   } catch (error) {
@@ -60,8 +59,7 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.UserModel.deleteById(req);
     if (record === 0) {
-      return res.send("user_not_found", "User not exists");
-      return;
+      return res.code(404).send({ message: "User not exists" });
     }
     return res.send({
       message: "User deleted.",
@@ -78,9 +76,12 @@ const get = async (req, res) => {
     let user_ids;
     if (req.user_data.role === "sub_franchisee") {
       const sub_franchisee = await table.FranchiseeModel.getByUserId(req);
-      user_ids = await table.TeacherModel.getUserIdsBySubFranchisee(
+      user_ids = await table.StudentModel.getUserIdsBySubFranchisee(
         sub_franchisee.id
       );
+      // user_ids = await table.TeacherModel.getUserIdsBySubFranchisee(
+      //   sub_franchisee.id
+      // );
     } else if (req.user_data.role === "teacher") {
       const teacher = await table.TeacherModel.getByUserId(req.user_data.id);
       user_ids = await table.StudentModel.getUserIdsBySubFranchisee(
@@ -101,8 +102,7 @@ const getById = async (req, res) => {
   try {
     const record = await table.UserModel.getById(req);
     if (!record) {
-      return res.send("not_found", "User not exists");
-      return;
+      return res.code(404).send({ message: "User not exists" });
     }
     delete record.password;
     return res.send(record);
@@ -117,8 +117,7 @@ const updatePassword = async (req, res) => {
     const record = await table.UserModel.getById(req);
 
     if (!record) {
-      return res.send("not_found", "User not exists");
-      return;
+      return res.code(404).send({ message: "User not exists" });
     }
 
     const verify_old_password = await hash.verify(
@@ -127,10 +126,9 @@ const updatePassword = async (req, res) => {
     );
 
     if (!verify_old_password) {
-      return res.send(
-        "Invalid password",
-        "Incorrect password. Please enter a valid password"
-      );
+      return res
+        .code(404)
+        .send({ message: "Incorrect password. Please enter a valid password" });
       return;
     }
 
@@ -148,11 +146,9 @@ const checkUsername = async (req, res) => {
   try {
     const user = await table.UserModel.getByUsername(req);
     if (user) {
-      return res.send(
-        "already_exists",
-        "username already exists try with different username"
-      );
-      return;
+      return res.code(409).send({
+        message: "username already exists try with different username",
+      });
     }
     return res.send({
       message: false,
@@ -167,8 +163,7 @@ const getUser = async (req, res) => {
   try {
     const record = await table.UserModel.getById(undefined, req.user_data.id);
     if (!record) {
-      return res.send("Invalid_token", "invalid token");
-      return;
+      return res.code(401).send({ messaege: "invalid token" });
     }
     return res.send(req.user_data);
   } catch (error) {
@@ -178,7 +173,6 @@ const getUser = async (req, res) => {
 };
 
 const getStudents = async (req, res) => {
-  console.log(req.user_data.id);
   try {
     if (req.user_data.role === "sub_franchisee") {
       const franchisee = await table.FranchiseeModel.getByUserId(req);
@@ -235,7 +229,7 @@ const resetPassword = async (req, res) => {
   try {
     const token = await table.UserModel.getByResetToken(req);
     if (!token) {
-      return res.send("invalid_url", "invalid url");
+      return res.code(401).send({ message: "invalid url" });
     }
 
     await table.UserModel.updatePassword(req, token.id);

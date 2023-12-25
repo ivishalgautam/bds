@@ -52,23 +52,21 @@ const update = async (req, res) => {
   try {
     record = await table.FranchiseeModel.getById(req);
     if (!record) {
-      return res.send("not_found", "Franchisee not exists in our database");
-      return;
+      return res.send({ message: "Franchisee not exists in our database" });
     }
 
     if (
       req.body?.franchisee_id &&
       !(await table.FranchiseeModel.getById(undefined, req.body.franchisee_id))
     ) {
-      return res.send("not_found", "Franchisee not exists in our database");
+      return res.send({ message: "Franchisee not exists in our database" });
     }
 
     if (
       req.body?.user_id &&
       !(await table.UserModel.getById(undefined, req.body.user_id))
     ) {
-      return res.send("not_found", "User not exists in our database");
-      return;
+      return res.send({ message: "User not exists in our database" });
     }
 
     return res.send(await table.FranchiseeModel.update(req));
@@ -82,8 +80,7 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.FranchiseeModel.getById(req);
     if (!record) {
-      return res.send("not_found", "Franchisee not exists in our database");
-      return;
+      return res.send({ message: "Franchisee not exists in our database" });
     }
     const user = await table.UserModel.deleteById(undefined, record.user_id);
     return res.send({
@@ -98,7 +95,6 @@ const deleteById = async (req, res) => {
 const get = async (req, res) => {
   try {
     return res.send(await table.FranchiseeModel.get());
-    return;
   } catch (error) {
     console.log(error);
     return res.send(error);
@@ -109,8 +105,7 @@ const getById = async (req, res) => {
   try {
     const record = await table.FranchiseeModel.getById(req);
     if (!record) {
-      return res.send("not_found", "Franchisee not exists in our database");
-      return;
+      return res.send({ message: "Franchisee not exists in our database" });
     }
     return res.send(record);
   } catch (error) {

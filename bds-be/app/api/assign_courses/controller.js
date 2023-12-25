@@ -20,10 +20,17 @@ const assignCourse = async (req, res) => {
     const assign_course = await table.CourseAssignModel.checkExists(req);
     if (assign_course) {
       return res.code(409).send({
-        message:
-          "This Course already assign to the user. Please assigned different course or user",
+        message: "This Course already assign to the user.",
       });
     }
+
+    const enquiryRecord = await table.CourseEnquiryModel.exist(
+      assignedTo?.dataValues.id,
+      record?.dataValues.id,
+      req.user_data.id
+    );
+
+    // return console.log({ enquiryRecord });
 
     req.body.course_name = record.course_name;
     // const franchisee = await table.FranchiseeModel.getById(
@@ -34,27 +41,31 @@ const assignCourse = async (req, res) => {
     //   return res.code(404).send({ message: "Franchisee not found!" });
     // }
     const data = await table.CourseAssignModel.create(req);
-    console.log({ course_assign: data });
 
     if (data) {
+      enquiryRecord !== null &&
+        (await table.CourseEnquiryModel.deleteById(
+          enquiryRecord?.dataValues?.id
+        ));
+
+      res.send({
+        message: "New course Assigned.",
+      });
+
       await sendMail(
-        assignedTo.dataValues.email,
+        assignedTo?.dataValues.email,
         "Course assigned",
         "",
         `<html>
         <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; text-align: center; padding: 20px;">
           <h1 style="color: #3498db;">Product enquiry</h1>
           <p style="margin-top: 20px;">
-            YOU ARE ASSIGNED TO A NEW COURSE: ${data.course_name} 
+            YOU ARE ASSIGNED TO A NEW COURSE: ${data?.course_name} 
           </p>
         </body>
       </html>`
       );
     }
-
-    return res.send({
-      message: "New course Assigned.",
-    });
   } catch (error) {
     console.log(error);
     return res.send(error);
@@ -65,8 +76,7 @@ const updateAssignCourse = async (req, res) => {
   try {
     let record = await table.CourseAssignModel.getById(req);
     if (!record) {
-      return res.send("not_found", "course not assgin");
-      return;
+      return res.code(404).send({ message: "not found!" });
     }
 
     if (req.body?.course_id) {
@@ -75,7 +85,6 @@ const updateAssignCourse = async (req, res) => {
         return res.send({
           message: "Courses not found. Please enter a valid course id",
         });
-        return;
       }
     }
 
@@ -90,8 +99,7 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.CourseAssignModel.deleteById(req);
     if (record === 0) {
-      return res.send("not_found", "course not assign");
-      return;
+      return res.code(404).send({ message: "course not assign" });
     }
     return res.send({
       message: "Course deleted.",
@@ -117,7 +125,7 @@ const get = async (req, res) => {
 };
 
 const getByFranchiseeId = async (req, res) => {
-  console.log(req.user_data.id);
+  // console.log(req.user_data.id);
   try {
     const courses = await table.CourseAssignModel.getAllCourseByFranchiseeId(
       req.user_data.id
@@ -134,8 +142,7 @@ const getById = async (req, res) => {
   try {
     const record = await table.CourseAssignModel.getById(req);
     if (!record) {
-      return res.send("not_found", "course not assign");
-      return;
+      return res.code(404).send({ message: "course not assign" });
     }
     return res.send(record);
   } catch (error) {

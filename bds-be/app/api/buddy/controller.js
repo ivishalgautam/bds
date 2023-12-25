@@ -18,8 +18,9 @@ const update = async (req, res) => {
   try {
     const record = await table.GroupModel.getById(req);
     if (!record) {
-      return res.send("not_found", "group not found or group is deleted");
-      return;
+      return res
+        .code(404)
+        .send({ message: "group not found or group is deleted" });
     }
     return res.send(await table.GroupModel.update(req));
   } catch (error) {
@@ -32,8 +33,9 @@ const deleteById = async (req, res) => {
   try {
     const record = await table.GroupModel.deleteById(req);
     if (record === 0) {
-      return res.send("not_found", "group not found or group is deleted");
-      return;
+      return res
+        .code(404)
+        .send({ message: "group not found or group is deleted" });
     }
     return res.send({
       message: "group deleted.",
@@ -57,8 +59,9 @@ const getById = async (req, res) => {
   try {
     const record = await table.GroupModel.getById(req);
     if (!record) {
-      return res.send("not_found", "group not found or group is deleted");
-      return;
+      return res
+        .code(404)
+        .send({ message: "group not found or group is deleted" });
     }
     return res.send(record);
   } catch (error) {

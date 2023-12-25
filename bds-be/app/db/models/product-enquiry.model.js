@@ -51,6 +51,12 @@ const create = async (user_id, product_id) => {
   });
 };
 
+const exist = async (user_id, product_id) => {
+  return await ProductEnquiryModel.findOne({
+    where: { user_id: user_id, product_id: product_id },
+  });
+};
+
 const get = async () => {
   return await ProductEnquiryModel.findAll();
 };
@@ -73,4 +79,5 @@ export default {
   get: get,
   getById: getById,
   deleteById: deleteById,
+  exist: exist,
 };
